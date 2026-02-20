@@ -283,11 +283,10 @@ Log4J2 is configured to log:
 
 ---
 
-# 📌 Author
+# 📌 Authors
 
-Manjunath Manke  
-Java Full Stack Developer  
-Revature Training Project  
+1. Pooja
+2. Manjunath  
 
 ---
 
