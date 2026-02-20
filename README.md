@@ -1,5 +1,14 @@
 #  RevPlay – Music Streaming Web Application
 
+> [!CAUTION]
+> **TEAM MEMBERS WARNING:** 
+> **DO NOT CHANGE** the database details in the `application.properties` file. 
+> To ensure the project runs smoothly for everyone, please create the **exact same** database user and settings in your local Oracle instance as specified in the properties file:
+> - **Username:** `revplay`
+> - **Password:** `revplay123`
+> - **Port:** `1522`
+> - **Service Name:** `xepdb1` (URL: `jdbc:oracle:thin:@localhost:1522/xepdb1`)
+
 ## Project Overview
 
 RevPlay is a full-stack monolithic music streaming web application developed as part of Revature training.  
@@ -204,13 +213,15 @@ git clone <repository-url>
 
 ### 2️⃣ Configure Database
 
-Update `application.properties`:
+Use the credentials already configured in `application.properties`:
 
+```properties
+spring.datasource.url=jdbc:oracle:thin:@localhost:1522/xepdb1
+spring.datasource.username=revplay
+spring.datasource.password=revplay123
 ```
-spring.datasource.url=jdbc:oracle:thin:@localhost:1521:xe
-spring.datasource.username=your_username
-spring.datasource.password=your_password
-```
+
+> **Note:** Ensure your Oracle instance is running on port **1522** or modify your local instance to match.
 
 ### 3️⃣ Build the Project
 
