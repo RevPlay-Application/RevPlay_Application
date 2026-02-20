@@ -1,6 +1,6 @@
-# 🎵 RevPlay – Music Streaming Web Application
+#  RevPlay – Music Streaming Web Application
 
-## 📌 Project Overview
+## Project Overview
 
 RevPlay is a full-stack monolithic music streaming web application developed as part of Revature training.  
 The application allows users to stream music, create playlists, mark favorites, and explore artists.  
