@@ -10,6 +10,4 @@ public interface ProfileManagementService {
     Artist updateArtistProfile(Long userId, String artistName, String bio, String genre, MultipartFile bannerImage);
 
     Artist getArtistByUserId(Long userId);
-
-    User getUserById(Long userId);
 }

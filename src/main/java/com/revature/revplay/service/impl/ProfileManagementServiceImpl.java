@@ -70,9 +70,4 @@ public class ProfileManagementServiceImpl implements ProfileManagementService {
         User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
         return artistRepository.findByUser(user).orElse(null);
     }
-
-    @Override
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId).orElse(null);
-    }
 }

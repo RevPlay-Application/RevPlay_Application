@@ -62,11 +62,6 @@ public class UserIdentityServiceImpl implements UserIdentityService {
     }
 
     @Override
-    public User findUserByEmail(String email) {
-        return userRepository.findByEmail(email).orElse(null);
-    }
-
-    @Override
     public boolean existsByUsername(String username) {
         return userRepository.existsByUsername(username);
     }
