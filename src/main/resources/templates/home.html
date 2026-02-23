@@ -132,7 +132,13 @@
             <div class="col-lg-6">
                 <h2 class="section-title">Fresh <span class="orange-text">Tracks</span></h2>
                 <div class="split-grid">
-                    <div th:each="song : ${songs}" class="card-small">
+                    <div th:each="song : ${songs}" class="card-small" style="cursor:pointer;"
+                        th:data-title="${song.title}" th:data-artist="${song.artist?.artistName}"
+                        th:data-album="${song.album?.albumName ?: 'Single'}" th:data-genre="${song.genre ?: '—'}"
+                        th:data-duration="${song.duration}" th:data-release="${song.releaseDate}"
+                        th:data-visibility="${song.visibility}"
+                        th:data-cover="${@base64Util.encode(song.coverImage) ?: (@base64Util.encode(song.album?.coverImage) ?: '/images/music-placeholder.svg')}"
+                        onclick="openSongModal(this)">
                         <img th:src="${@base64Util.encode(song.coverImage) ?: (@base64Util.encode(song.album?.coverImage) ?: '/images/music-placeholder.svg')}"
                             class="song-img-small" th:alt="${song.title}">
                         <div class="mt-2 text-truncate">
@@ -211,7 +217,93 @@
         </div>
     </footer>
 
+    <!-- ===== Song Detail Modal ===== -->
+    <div class="modal fade" id="songDetailModal" tabindex="-1" aria-labelledby="songDetailModalLabel"
+        aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                <div class="modal-header border-0 pb-0 pt-4 px-4">
+                    <h5 class="modal-title fw-bold" id="songDetailModalLabel">Song Details</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4">
+                    <div class="row g-4 align-items-center">
+                        <div class="col-4">
+                            <img id="modalCover" src="/images/music-placeholder.svg" alt="Cover"
+                                class="w-100 rounded-3 shadow-sm aspect-ratio-1-1 object-fit-cover">
+                        </div>
+                        <div class="col-8">
+                            <h4 class="mb-1 fw-bold" id="modalTitle">—</h4>
+                            <p class="orange-text fw-bold mb-3" id="modalArtist">—</p>
+
+                            <div class="d-flex flex-column gap-1">
+                                <div class="d-flex justify-content-between border-bottom pb-1">
+                                    <small class="text-muted text-uppercase fw-bold"
+                                        style="font-size: 0.65rem;">Album</small>
+                                    <small class="fw-semibold" id="modalAlbum">—</small>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom pb-1">
+                                    <small class="text-muted text-uppercase fw-bold"
+                                        style="font-size: 0.65rem;">Genre</small>
+                                    <small class="fw-semibold" id="modalGenre">—</small>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom pb-1">
+                                    <small class="text-muted text-uppercase fw-bold"
+                                        style="font-size: 0.65rem;">Duration</small>
+                                    <small class="fw-semibold" id="modalDuration">—</small>
+                                </div>
+                                <div class="d-flex justify-content-between border-bottom pb-1">
+                                    <small class="text-muted text-uppercase fw-bold"
+                                        style="font-size: 0.65rem;">Released</small>
+                                    <small class="fw-semibold" id="modalRelease">—</small>
+                                </div>
+                                <div class="d-flex justify-content-between pt-1">
+                                    <small class="text-muted text-uppercase fw-bold"
+                                        style="font-size: 0.65rem;">Visibility</small>
+                                    <span id="modalVisibility"></span>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        function openSongModal(el) {
+            const title = el.dataset.title || '—';
+            const artist = el.dataset.artist || '—';
+            const album = el.dataset.album || 'Single';
+            const genre = el.dataset.genre || '—';
+            const duration = parseInt(el.dataset.duration) || 0;
+            const release = el.dataset.release || '—';
+            const vis = el.dataset.visibility || '';
+            const cover = el.dataset.cover || '/images/music-placeholder.svg';
+
+            // Format duration as mm:ss
+            const mins = Math.floor(duration / 60);
+            const secs = String(duration % 60).padStart(2, '0');
+            const durationStr = duration > 0 ? `${mins}:${secs}` : '—';
+
+            // Visibility badge
+            const isPublic = vis.toLowerCase() === 'public';
+            const badgeClass = isPublic ? 'bg-success' : 'bg-secondary';
+
+            document.getElementById('modalCover').src = cover;
+            document.getElementById('modalTitle').textContent = title;
+            document.getElementById('modalArtist').textContent = artist;
+            document.getElementById('modalAlbum').textContent = album;
+            document.getElementById('modalGenre').textContent = genre;
+            document.getElementById('modalDuration').textContent = durationStr;
+            document.getElementById('modalRelease').textContent = (release && release !== 'null') ? release : '—';
+            document.getElementById('modalVisibility').innerHTML =
+                `<span class="badge rounded-pill text-white shadow-sm ${badgeClass}" style="font-size:0.6rem;">${vis || '—'}</span>`;
+
+            new bootstrap.Modal(document.getElementById('songDetailModal')).show();
+        }
+    </script>
 </body>
 
 </html>

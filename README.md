@@ -171,7 +171,7 @@ erDiagram
 
 **Music Discovery:**
 - ✅ Browse music library with all available songs
-- [ ] View song details (title, artist, album, duration, genre, release date)
+- ✅ View song details (title, artist, album, duration, genre, release date)
 
 ---
 
