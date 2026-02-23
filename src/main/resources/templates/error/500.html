@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Error - RevPlay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <div class="container" style="text-align: center; padding-top: 5rem;">
+        <h1 style="font-size: 3rem; color: #e74c3c;">Oops!</h1>
+        <h2>Something went wrong</h2>
+        <p th:text="${message}">An unexpected error occurred.</p>
+        <a th:href="@{/}" class="btn btn-primary" style="margin-top: 2rem;">Go Home</a>
+    </div>
+</body>
+
+</html>

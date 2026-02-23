@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Upload Song - RevPlay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}" class="navbar-brand">🎵 REVPLAY - ARTIST</a>
+        <div class="nav-links">
+            <a th:href="@{/}">Home</a>
+            <a th:href="@{/user/favorites}">Favorites</a>
+            <a th:href="@{/user/playlists}">Playlists</a>
+            <a th:href="@{/user/history}">History</a>
+            <div sec:authorize="isAuthenticated()">
+                <div class="profile-menu">
+                    <div class="profile-circle" th:text="${#authentication.name.substring(0,1).toUpperCase()}">U</div>
+                    <div class="profile-dropdown">
+                        <a th:href="@{/artist/dashboard}" class="active">Dashboard</a>
+                        <a th:href="@{/artist/settings}">Settings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="main-content">
+        <div class="card" style="max-width: 600px; margin: 2rem auto;">
+            <h2 style="text-align: center; margin-bottom: 2rem; color: var(--primary);">Upload New Song</h2>
+
+            <form th:action="@{/artist/upload}" method="post" enctype="multipart/form-data" th:object="${song}">
+                <div class="form-group">
+                    <label for="title">Song Title</label>
+                    <input type="text" id="title" th:field="*{title}" class="form-control" required
+                        placeholder="Enter song title">
+                </div>
+
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <input type="text" id="genre" th:field="*{genre}" class="form-control"
+                        placeholder="e.g. Pop, Rock, Jazz">
+                </div>
+
+                <div class="form-group">
+                    <label>Song Cover Image (Optional)</label>
+                    <div class="custom-file-wrapper">
+                        <input type="file" id="cover" name="cover" class="custom-file-input" accept="image/*"
+                            onchange="updateFileName(this)">
+                        <label for="cover" class="custom-file-label">🖼️ Choose Cover Image</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label>MP3 Audio File</label>
+                    <div class="custom-file-wrapper">
+                        <input type="file" id="file" name="file" class="custom-file-input" accept="audio/mpeg" required
+                            onchange="updateFileName(this)">
+                        <label for="file" class="custom-file-label">📁 Choose MP3 File</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="albumId">Assign to Album (Optional)</label>
+                    <select id="albumId" name="albumId" class="form-control">
+                        <option value="">-- No Album --</option>
+                        <option th:each="album : ${albums}" th:value="${album.albumId}" th:text="${album.albumName}">
+                            Album Name</option>
+                    </select>
+                </div>
+
+                <div style="text-align: center; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Upload Song</button>
+                </div>
+            </form>
+            <div style="text-align: center; margin-top: 1rem;">
+                <a th:href="@{/artist/dashboard}"
+                    style="color: var(--text-secondary); text-decoration: none;">Cancel</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Music Player -->
+    <div th:replace="~{artist/dashboard :: #musicPlayer}"></div>
+
+    <script th:src="@{/js/player.js}"></script>
+</body>
+
+</html>
