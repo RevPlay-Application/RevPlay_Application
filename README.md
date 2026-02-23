@@ -1,311 +1,278 @@
-#  RevPlay – Music Streaming Web Application
+# 🎵 RevPlay — Music Streaming Application
 
-> [!CAUTION]
-> **TEAM MEMBERS WARNING:** 
-> **DO NOT CHANGE** the database details in the `application.properties` file. 
-> To ensure the project runs smoothly for everyone, please create the **exact same** database user and settings in your local Oracle instance as specified in the properties file:
-> - **Username:** `revplay`
-> - **Password:** `revplay123`
-> - **Port:** `1522`
-> - **Service Name:** `xepdb1` (URL: `jdbc:oracle:thin:@localhost:1522/xepdb1`)
+> **⚠️ WARNING FOR TEAM MEMBERS:**
+> Do **NOT** change the database connection details in your local `application.properties`. Your local config must match the shared team configuration exactly. Changing the DB credentials will break your connection to the shared Oracle database.
 
-## Project Overview
-
-RevPlay is a full-stack monolithic music streaming web application developed as part of Revature training.  
-The application allows users to stream music, create playlists, mark favorites, and explore artists.  
-Artists can upload songs, manage albums, and track engagement analytics.
-
-This project demonstrates enterprise-level backend architecture using Spring Boot, Oracle Database, Thymeleaf, and Spring Security.
+RevPlay is a full-stack music streaming web application built with **Spring Boot**, **Thymeleaf**, and an **Oracle Database**. It allows listeners to discover and play music, and artists to manage and upload their content.
 
 ---
 
-## 🏢 Organization
+## 🚀 Tech Stack
 
-**Company:** Revature  
-**Project Name:** RevPlay  
-**Application Type:** Full-Stack Monolithic Web Application  
-
----
-
-## 🛠️ Tech Stack
-
-### Backend
-- Java 17
-- Spring Boot 3.5.10
-- Spring Data JPA
-- Spring Security
-- Thymeleaf
-- Maven
-- Log4J2
-- JUnit4
-
-### Database
-- Oracle Database
-- PL/SQL
-- Sequences
-- Triggers
-- Stored Procedures
-
-### Frontend
-- Thymeleaf Templates
-- HTML5
-- CSS3
-- Bootstrap (Optional)
-- JavaScript (for player controls)
+| Layer | Technology |
+|---|---|
+| **Backend** | Java 17, Spring Boot 3.x |
+| **Security** | Spring Security 6 |
+| **ORM** | Spring Data JPA / Hibernate |
+| **Templating** | Thymeleaf + Thymeleaf Spring Security Extras |
+| **Database** | Oracle Database (via OJDBC 11) |
+| **Frontend** | Bootstrap 5.3, Vanilla CSS, JavaScript |
+| **Build Tool** | Maven (Maven Wrapper included) |
 
 ---
 
-## 👥 User Roles
+## ⚙️ Prerequisites
 
-1. USER (Listener)
-2. ARTIST
+Before running the application, make sure you have:
 
----
-
-# 🎧 Core Features
-
----
-
-## 🔐 Authentication & Security
-
-- User Registration
-- Artist Registration
-- Login / Logout
-- Role-Based Authorization
-- Password Encryption using BCrypt
-- Session-Based Authentication
+- **Java 17+** installed (JDK 17 or JDK 21 recommended)
+- **Maven** or use the included `./mvnw` wrapper
+- Access to the shared **Oracle Database** (credentials in `application.properties`)
 
 ---
 
-## 👤 User Features
+## 🏃 Running the Application
 
-### Profile Management
-- View Profile
-- Edit Profile (Display Name, Bio, Profile Picture)
-- View Account Statistics
+```bash
+# Using the Maven Wrapper (recommended)
+./mvnw spring-boot:run
 
-### Music Discovery
-- Browse All Songs
-- Search Songs, Artists, Albums, Playlists
-- Filter by Genre, Artist, Album, Release Year
-- View Song Details
-- View Artist Profiles
-- View Album Details
+# If JAVA_HOME is not set to Java 17+, override it:
+$env:JAVA_HOME = 'C:\Program Files\Java\jdk-21'; ./mvnw spring-boot:run
+```
 
-### Music Player
-- Play / Pause
-- Skip Forward / Backward
-- Seek Bar
-- Shuffle Mode
-- Repeat Mode
-- Volume Control
-- Playback Queue
+The application will start at: **http://localhost:8080**
 
-### Favorites
-- Add to Favorites
-- Remove from Favorites
-- View All Favorite Songs
-
-### Playlist Management
-- Create Playlist
-- Edit Playlist
-- Delete Playlist
-- Add / Remove Songs
-- Reorder Songs
-- Set Privacy (Public / Private)
-- View Public Playlists
-- Follow / Unfollow Playlist
-
-### Listening History
-- View Recently Played Songs
-- View Complete History
-- Clear Listening History
+> You will be redirected to the Login page immediately. Register an account to get started.
 
 ---
 
-## 🎤 Artist Features
-
-Artists have all USER features plus:
-
-### Artist Profile
-- Create Artist Profile
-- Upload Profile Picture
-- Upload Banner Image
-- Add Social Media Links
-- View Profile as Public
-
-### Music Upload & Management
-- Upload Songs (BLOB)
-- Upload Album Artwork (BLOB)
-- Create Albums
-- Add Songs to Album
-- Edit Song Details
-- Edit Album Details
-- Delete Songs
-- Delete Albums
-- Set Song Visibility (Public / Unlisted)
-
-### Analytics Dashboard
-- Total Songs
-- Total Plays
-- Total Favorites
-- Most Played Songs
-- Listening Trends
-- Top Listeners
-
----
-
-# 🗄️ Database Schema
-
-Main Tables:
-
-- USERS
-- ARTISTS
-- SONGS
-- ALBUMS
-- PLAYLISTS
-- PLAYLIST_SONGS
-- FAVORITES
-- LISTENING_HISTORY
-
-Database Features:
-
-- Sequences for Auto Increment
-- Triggers
-- Stored Procedure (Increment Play Count)
-- Function (Get Artist Total Plays)
-
----
-
-# 🏗️ Project Architecture
-
-Layered Architecture:
+## 📁 Project Structure
 
 ```
-com.revature.revplay
-│
-├── config
-├── controller
-├── service
-│    └── impl
-├── repository
-├── model
-├── dto
-├── utils
-├── exception
-└── RevPlayApplication.java
-```
-
-Architecture Type:
-- Monolithic
-- MVC Pattern
-- Layered Design
-
----
-
-# ▶️ How to Run the Project
-
-### 1️⃣ Clone the Repository
-
-```
-git clone <repository-url>
-```
-
-### 2️⃣ Configure Database
-
-Use the credentials already configured in `application.properties`:
-
-```properties
-spring.datasource.url=jdbc:oracle:thin:@localhost:1522/xepdb1
-spring.datasource.username=revplay
-spring.datasource.password=revplay123
-```
-
-> **Note:** Ensure your Oracle instance is running on port **1522** or modify your local instance to match.
-
-### 3️⃣ Build the Project
-
-```
-mvn clean install
-```
-
-### 4️⃣ Run Application
-
-```
-mvn spring-boot:run
-```
-
-Application will start at:
-
-```
-http://localhost:8080
+src/
+├── main/
+│   ├── java/com/revature/revplay/
+│   │   ├── config/          # Spring Security configuration
+│   │   ├── controller/      # MVC Controllers
+│   │   ├── model/           # JPA Entity classes
+│   │   ├── repository/      # Spring Data JPA Repositories
+│   │   ├── service/         # Business logic services
+│   │   └── utils/           # Utility classes (e.g. Base64Util)
+│   └── resources/
+│       ├── static/css/      # Global stylesheet (style.css)
+│       ├── static/js/       # JavaScript (music player)
+│       ├── static/images/   # Static assets
+│       └── templates/       # Thymeleaf HTML templates
 ```
 
 ---
 
-# 🧪 Testing
+## 🗃️ Database ERD
 
-- Unit Testing using JUnit4
-- Service Layer Testing
-- Repository Testing
-- Security Testing
+```mermaid
+erDiagram
+    USERS {
+        LONG user_id PK
+        STRING email
+        STRING username
+        STRING password
+        STRING role
+        STRING display_name
+        STRING bio
+        BLOB profile_image
+        TIMESTAMP created_at
+    }
+    ARTISTS {
+        LONG artist_id PK
+        LONG user_id FK
+        STRING artist_name
+        STRING genre
+        BLOB banner_image
+        STRING instagram
+        STRING twitter
+        STRING youtube
+        STRING website
+    }
+    SONGS {
+        LONG song_id PK
+        LONG artist_id FK
+        LONG album_id FK
+        STRING title
+        STRING genre
+        INT duration
+        BLOB audio_file
+        BLOB cover_image
+        INT play_count
+        STRING visibility
+        DATE release_date
+    }
+    ALBUMS {
+        LONG album_id PK
+        LONG artist_id FK
+        STRING album_name
+        STRING description
+        DATE release_date
+        BLOB cover_image
+    }
+    PLAYLISTS {
+        LONG playlist_id PK
+        LONG user_id FK
+        STRING name
+        STRING description
+        STRING privacy
+    }
+    PLAYLIST_SONGS {
+        LONG playlist_song_id PK
+        LONG playlist_id FK
+        LONG song_id FK
+    }
+    FAVORITES {
+        LONG favorite_id PK
+        LONG user_id FK
+        LONG song_id FK
+        TIMESTAMP added_at
+    }
+    LISTENING_HISTORY {
+        LONG history_id PK
+        LONG user_id FK
+        LONG song_id FK
+        TIMESTAMP played_at
+    }
+
+    USERS ||--o| ARTISTS : "is"
+    ARTISTS ||--o{ SONGS : "uploads"
+    ARTISTS ||--o{ ALBUMS : "creates"
+    ALBUMS ||--o{ SONGS : "contains"
+    USERS ||--o{ PLAYLISTS : "owns"
+    PLAYLISTS ||--o{ PLAYLIST_SONGS : "has"
+    SONGS ||--o{ PLAYLIST_SONGS : "in"
+    USERS ||--o{ FAVORITES : "marks"
+    SONGS ||--o{ FAVORITES : "favorited by"
+    USERS ||--o{ LISTENING_HISTORY : "tracks"
+    SONGS ||--o{ LISTENING_HISTORY : "played in"
+```
 
 ---
 
-# 📊 Logging
+## 👥 Team & User Stories
 
-Log4J2 is configured to log:
+### 👨‍💻 Person 1 — Authentication & Basic Profile + Basic Discovery ✅
 
-- Login attempts
-- Song uploads
-- Playlist operations
-- Errors and exceptions
+**As a User (Listener), I should be able to:**
+- ✅ Register and create an account with email, username, and password
+- ✅ Login to my account using email/username and password
+- ✅ View and edit my profile (display name, bio, profile picture)
 
----
+**As a Musician/Artist, I should be able to:**
+- ✅ Register as an artist with email, password, and artist details
+- ✅ Login to my account
+- ✅ Create and manage artist profile (artist name, bio, genre, profile picture)
 
-# 📄 Documentation Included
-
-- ER Diagram
-- Application Architecture Diagram
-- README.md
-- Testing Artifacts
-
----
-
-# 🎯 Learning Outcomes
-
-- Enterprise Spring Boot Development
-- Role-Based Security Implementation
-- File Upload & Streaming using BLOB
-- PL/SQL Integration
-- Layered Architecture Design
-- Exception Handling & Logging
-- Full-Stack Web Application Development
+**Music Discovery:**
+- ✅ Browse music library with all available songs
+- ✅ View song details (title, artist, album, duration, genre, release date)
 
 ---
 
-# 🚀 Future Enhancements
+### 👨‍💻 Person 2 — Search, Categories & Artist/Album Views
 
-- REST API Version
-- JWT Authentication
-- Microservices Architecture
-- Real-Time Notifications
-- Cloud Deployment (AWS / Azure)
+**As a User (Listener), I should be able to:**
+- [ ] Search for songs, artists, albums, and playlists by keywords
+- [ ] Browse content by categories (genre, artist, album)
+- [ ] Filter songs by genre, artist, album, or release year
 
----
+**Artist & Album Views:**
+- [ ] View artist profiles with their songs and albums
+- [ ] View album details with track list
 
-# 📌 Authors
- Team Lead
-  Manjunath
-  1. Manjunath
-  2. Pooja
-  3. Ramya
-  4. Indraja
-  5. Neha B 
+**As a Musician/Artist, I should be able to:**
+- [ ] View my artist profile as users see it
+- [ ] Add social media links (Instagram, Twitter, YouTube, Spotify, Website)
 
 ---
 
-# 📜 License
+### 👨‍💻 Person 3 — Music Player & Playback Queue
 
-This project is developed for educational and training purposes under Revature.
+**As a User (Listener), I should be able to:**
+- [ ] Play songs using integrated web music player
+- [ ] Use player controls (play, pause, skip forward, skip backward, seek)
+- [ ] View currently playing song with progress bar
+- [ ] Create and manage playback queue
+- [ ] Enable repeat mode (off, repeat one, repeat all)
+- [ ] Enable shuffle mode
+- [ ] Adjust volume control
 
+**Listening History:**
+- [ ] View recently played songs (last 50 songs)
+- [ ] View complete listening history with date and time
+- [ ] Clear listening history
+
+---
+
+### 👨‍💻 Person 4 — Favorites & Playlist Management
+
+**As a User (Listener), I should be able to:**
+- [ ] Mark songs as favorites
+- [ ] Remove songs from favorites
+- [ ] View all my favorite songs
+- [ ] Quick access to favorite songs from player
+
+**Playlist Management:**
+- [ ] Create playlists with name and description
+- [ ] Set playlist privacy (public or private)
+- [ ] Add songs to my playlists
+- [ ] Remove songs from my playlists
+- [ ] Reorder songs in playlists
+- [ ] Update playlist details (name, description, privacy)
+- [ ] Delete playlists created by me
+- [ ] View all my playlists
+- [ ] View public playlists created by other users
+- [ ] Follow/unfollow public playlists
+
+---
+
+### 👨‍💻 Person 5 — Artist Upload & Analytics + Account Stats
+
+**As a Musician/Artist, I should be able to:**
+- [ ] Upload songs with details (title, genre, duration, audio file)
+- [ ] Upload album artwork/cover image
+- [ ] Create albums with name, description, release date, and cover art
+- [ ] Add songs to albums
+- [ ] Remove songs from albums
+- [ ] View all my uploaded songs
+- [ ] View all my created albums
+- [ ] Update song information (title, genre, album)
+- [ ] Update album information (name, description, cover art)
+- [ ] Delete my songs
+- [ ] Delete my albums (if no songs are in the album)
+- [ ] Set song visibility (public/unlisted)
+
+**Analytics & Insights:**
+- [ ] View dashboard with key metrics (total songs, total plays, total favorites)
+- [ ] View play count for individual songs
+- [ ] View songs sorted by popularity (most played)
+- [ ] View list of users who favorited my songs
+- [ ] View listening trends over time (daily/weekly/monthly plays)
+- [ ] View top listeners (users who played my songs the most)
+
+**Account Statistics:**
+- [ ] View my account statistics (total playlists, favorite songs count, listening time)
+
+---
+
+## 🔐 Roles
+
+| Role | Access |
+|---|---|
+| `SUBSCRIBER` | Browse music, manage profile, playlists, favorites, listening history |
+| `ARTIST` | All subscriber features + Artist Studio (upload, manage songs/albums, analytics) |
+
+---
+
+## 📝 Notes
+
+- Profile images and song cover images are stored as BLOBs in the Oracle database and served as Base64 Data URIs.
+- Audio files are stored as BLOBs and streamed directly from the database.
+- Spring Security handles all authentication. The navbar is only visible after login.
+- `spring.jpa.hibernate.ddl-auto=update` is used — the schema is managed by Hibernate automatically.
