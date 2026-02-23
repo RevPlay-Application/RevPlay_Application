@@ -1,0 +1,85 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Playlists - RevPlay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <nav class="navbar" th:fragment="nav">
+        <a th:href="@{/}" class="navbar-brand">🎵 REVPLAY</a>
+        <div class="nav-links">
+            <a th:href="@{/}">Home</a>
+            <div sec:authorize="isAuthenticated()">
+                <a th:href="@{/user/favorites}">Favorites</a>
+                <a th:href="@{/user/playlists}" class="active">Playlists</a>
+                <a th:href="@{/user/history}">History</a>
+
+                <div class="profile-menu">
+                    <div class="profile-circle" th:if="${currentUser != null && currentUser.profileImage != null}">
+                        <img th:src="@{/user/profile-image/{id}(id=${currentUser.userId})}"
+                            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    </div>
+                    <div class="profile-circle" th:if="${currentUser == null || currentUser.profileImage == null}"
+                        th:text="${#authentication.name != null && #authentication.name.length() > 0 ? #authentication.name.substring(0,1).toUpperCase() : 'U'}">
+                        U</div>
+                    <div class="profile-dropdown">
+                        <a th:href="@{/artist/dashboard}" sec:authorize="hasRole('ARTIST')">Dashboard</a>
+                        <a th:href="@{/artist/settings}" sec:authorize="hasRole('ARTIST')">Settings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </div>
+            </div>
+            <a th:href="@{/login}" sec:authorize="!isAuthenticated()">Login</a>
+            <a th:href="@{/register}" sec:authorize="!isAuthenticated()">Register</a>
+        </div>
+    </nav>
+
+    <div class="container" id="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1>My Playlists</h1>
+            <button onclick="document.getElementById('createPlaylistModal').style.display='block'"
+                class="btn btn-primary">Create Playlist</button>
+        </div>
+
+        <p th:if="${playlists.empty}">No playlists created yet.</p>
+
+        <div class="playlist-grid"
+            style="display: grid; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); gap: 1.5rem;">
+            <div th:each="playlist : ${playlists}" class="card">
+                <img th:src="@{/images/music-placeholder.svg}"
+                    style="width: 100%; border-radius: 4px; margin-bottom: 1rem; aspect-ratio: 1; object-fit: cover;">
+                <h3 th:text="${playlist.name}">Playlist Name</h3>
+                <p th:text="${#lists.size(playlist.playlistSongs) + ' Songs'}" style="color: var(--text-secondary);">0
+                    Songs</p>
+                <a th:href="@{/user/playlists/{id}(id=${playlist.playlistId})}" class="btn-view-playlist">View</a>
+            </div>
+        </div>
+
+        <!-- Create Playlist Modal -->
+        <div id="createPlaylistModal"
+            style="display:none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); z-index: 1000;">
+            <div class="card" style="width: 400px; margin: 100px auto; position: relative;">
+                <span onclick="document.getElementById('createPlaylistModal').style.display='none'"
+                    style="position: absolute; right: 15px; top: 10px; cursor: pointer; font-size: 1.5rem;">&times;</span>
+                <h2 style="text-align: center; color: var(--text-primary);">New Playlist</h2>
+                <form th:action="@{/user/playlists/create}" method="post">
+                    <div class="form-group">
+                        <label for="name">Playlist Name</label>
+                        <input type="text" id="name" name="name" class="form-control" required>
+                    </div>
+                    <button type="submit" class="btn btn-primary" style="width: 100%;">Create</button>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Music Player -->
+    <div th:replace="~{artist/dashboard :: #musicPlayer}"></div>
+
+    <script th:src="@{/js/player.js}"></script>
+</body>
+
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Artist Settings - RevPlay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}" class="navbar-brand">🎵 REVPLAY - ARTIST</a>
+        <div class="nav-links">
+            <a th:href="@{/}">Home</a>
+            <div sec:authorize="isAuthenticated()">
+                <a th:href="@{/user/favorites}">Favorites</a>
+                <a th:href="@{/user/playlists}">Playlists</a>
+                <a th:href="@{/user/history}">History</a>
+
+                <div class="profile-menu">
+                    <div class="profile-circle" th:text="${#authentication.name.substring(0,1).toUpperCase()}">U</div>
+                    <div class="profile-dropdown">
+                        <a th:href="@{/artist/dashboard}">Dashboard</a>
+                        <a th:href="@{/artist/settings}" class="active">Settings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="main-content">
+        <h1>Artist Settings</h1>
+
+        <div class="card" style="max-width: 600px; margin: 0 auto;">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <!-- Profile Image Display -->
+                <div th:if="${artist.user.profileImage != null}" style="margin-bottom: 1rem;">
+                    <img th:src="@{/user/profile-image/{id}(id=${artist.user.userId})}"
+                        style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 3px solid var(--primary);">
+                </div>
+                <div th:if="${artist.user.profileImage == null}"
+                    style="width: 100px; height: 100px; background: var(--primary); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3rem; color: white; margin: 0 auto; margin-bottom: 1rem;">
+                    <span th:text="${artist.artistName.substring(0,1).toUpperCase()}">A</span>
+                </div>
+                <h2 th:text="${artist.artistName}">Artist Name</h2>
+                <p th:text="${artist.genre}" style="color: var(--text-secondary);">Genre</p>
+            </div>
+
+            <div style="display: grid; grid-template-columns: 1fr; gap: 1rem;">
+                <div
+                    style="display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <span style="font-weight: 600;">Website</span>
+                    <a th:href="${artist.website}"
+                        th:text="${artist.website != null && !artist.website.isEmpty() ? artist.website : 'Not Set'}"
+                        target="_blank" style="color: var(--primary);">Link</a>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <span style="font-weight: 600;">Instagram</span>
+                    <span
+                        th:text="${artist.instagram != null && !artist.instagram.isEmpty() ? artist.instagram : 'Not Set'}">@user</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <span style="font-weight: 600;">Twitter</span>
+                    <span
+                        th:text="${artist.twitter != null && !artist.twitter.isEmpty() ? artist.twitter : 'Not Set'}">@user</span>
+                </div>
+                <div
+                    style="display: flex; justify-content: space-between; padding: 1rem; border-bottom: 1px solid var(--glass-border);">
+                    <span style="font-weight: 600;">YouTube</span>
+                    <span
+                        th:text="${artist.youtube != null && !artist.youtube.isEmpty() ? artist.youtube : 'Not Set'}">Channel</span>
+                </div>
+            </div>
+
+            <div style="text-align: center; margin-top: 2rem;">
+                <a th:href="@{/artist/edit-profile}" class="btn btn-primary"
+                    style="padding: 0.8rem 2.5rem; text-decoration: none;">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Music Player -->
+    <div th:replace="~{artist/dashboard :: #musicPlayer}"></div>
+
+    <script th:src="@{/js/player.js}"></script>
+</body>
+
+</html>

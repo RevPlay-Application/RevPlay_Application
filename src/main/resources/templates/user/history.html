@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Listening History - RevPlay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}" class="navbar-brand">🎵 REVPLAY</a>
+        <div class="nav-links">
+            <a th:href="@{/}">Home</a>
+            <div sec:authorize="isAuthenticated()">
+                <a th:href="@{/user/favorites}">Favorites</a>
+                <a th:href="@{/user/playlists}">Playlists</a>
+                <a th:href="@{/user/history}" class="active">History</a>
+
+                <div class="profile-menu">
+                    <div class="profile-circle" th:if="${currentUser != null && currentUser.profileImage != null}">
+                        <img th:src="@{/user/profile-image/{id}(id=${currentUser.userId})}"
+                            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    </div>
+                    <div class="profile-circle" th:if="${currentUser == null || currentUser.profileImage == null}"
+                        th:text="${#authentication.name != null && #authentication.name.length() > 0 ? #authentication.name.substring(0,1).toUpperCase() : 'U'}">
+                        U</div>
+                    <div class="profile-dropdown">
+                        <a th:href="@{/artist/dashboard}" sec:authorize="hasRole('ARTIST')">Dashboard</a>
+                        <a th:href="@{/artist/settings}" sec:authorize="hasRole('ARTIST')">Settings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </div>
+            </div>
+            <a th:href="@{/login}" sec:authorize="!isAuthenticated()">Login</a>
+            <a th:href="@{/register}" sec:authorize="!isAuthenticated()">Register</a>
+        </div>
+    </nav>
+
+    <div class="container" id="main-content">
+        <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 2rem;">
+            <h1>Listening History</h1>
+            <button th:if="${!history.empty}" class="btn" id="clearHistoryBtn"
+                style="background: #ff4d4d; color: white;">Clear History</button>
+        </div>
+        <p th:if="${history.empty}">No listening history available.</p>
+
+        <script th:if="${!history.empty}">
+            document.getElementById('clearHistoryBtn').onclick = async () => {
+                const confirmed = await App.showConfirm('Clear History', 'Are you sure you want to delete all your listening history? This cannot be undone.');
+                if (confirmed) {
+                    const response = await fetch('/user/history/clear', { method: 'POST' });
+                    const data = await response.json();
+                    if (data.success) {
+                        App.showToast('History cleared!', 'success');
+                        App.navigate('/user/history');
+                    }
+                }
+            };
+        </script>
+
+        <table th:if="${!history.empty}" class="table"
+            style="width: 100%; border-collapse: collapse; background: var(--surface); border-radius: 8px; overflow: hidden; margin-top: 2rem;">
+            <thead>
+                <tr style="background: rgba(0,0,0,0.1); border-bottom: 1px solid var(--text-secondary);">
+                    <th style="padding: 1rem; text-align: left;">Song</th>
+                    <th style="padding: 1rem; text-align: left;">Artist</th>
+                    <th style="padding: 1rem; text-align: left;">Listened On</th>
+                    <th style="padding: 1rem; text-align: right;">Action</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr th:each="hist : ${history}" style="border-bottom: 1px solid rgba(255,255,255,0.05);">
+                    <td style="padding: 1rem;">
+                        <div style="display: flex; align-items: center;">
+                            <img th:src="@{/songs/cover/{id}(id=${hist.song.songId})}"
+                                onerror="this.src='/images/music-placeholder.svg'"
+                                style="width: 40px; height: 40px; border-radius: 4px; margin-right: 1rem; object-fit: cover;">
+                            <span th:text="${hist.song.title}">Song Title</span>
+                        </div>
+                    </td>
+                    <td th:text="${hist.song.artist.artistName}" style="padding: 1rem; color: var(--text-secondary);">
+                        Artist</td>
+                    <td th:text="${#temporals.format(hist.listenedAt, 'MMM dd, yyyy HH:mm')}"
+                        style="padding: 1rem; color: var(--text-secondary);">Date</td>
+                    <td style="padding: 1rem; text-align: right;">
+                        <button class="btn btn-primary play-btn" th:data-id="${hist.song.songId}"
+                            th:data-title="${hist.song.title}" th:data-artist="${hist.song.artist.artistName}"
+                            th:data-album-id="${hist.song.album != null ? hist.song.album.albumId : 'null'}"
+                            style="font-size: 0.8rem; padding: 0.5rem 1rem;">Play</button>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Enhanced Music Player -->
+    <div th:replace="~{artist/dashboard :: #musicPlayer}"></div>
+
+    <script th:src="@{/js/player.js}"></script>
+</body>
+
+</html>

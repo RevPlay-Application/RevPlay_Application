@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Edit Profile - RevPlay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}" class="navbar-brand">🎵 REVPLAY - ARTIST</a>
+        <div class="nav-links">
+            <a th:href="@{/}">Home</a>
+            <div sec:authorize="isAuthenticated()">
+                <a th:href="@{/user/favorites}">Favorites</a>
+                <a th:href="@{/user/playlists}">Playlists</a>
+                <a th:href="@{/user/history}">History</a>
+
+                <div class="profile-menu">
+                    <div class="profile-circle" th:if="${currentUser != null && currentUser.profileImage != null}">
+                        <img th:src="@{/user/profile-image/{id}(id=${currentUser.userId})}"
+                            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    </div>
+                    <div class="profile-circle" th:if="${currentUser == null || currentUser.profileImage == null}"
+                        th:text="${#authentication.name.substring(0,1).toUpperCase()}">U</div>
+                    <div class="profile-dropdown">
+                        <a th:href="@{/artist/dashboard}">Dashboard</a>
+                        <a th:href="@{/artist/settings}" class="active">Settings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container" id="main-content">
+        <h1>Edit Profile</h1>
+
+        <div class="card">
+            <form th:action="@{/artist/edit-profile}" th:object="${artist}" method="post" enctype="multipart/form-data">
+
+                <div class="form-group" style="text-align: center; margin-bottom: 2rem;">
+                    <label>Profile Picture</label>
+                    <div style="margin-bottom: 1rem;">
+                        <img th:if="${artist.user.profileImage != null}"
+                            th:src="@{/user/profile-image/{id}(id=${artist.user.userId})}"
+                            style="width: 100px; height: 100px; border-radius: 50%; object-fit: cover; border: 2px solid var(--primary);">
+                        <div th:if="${artist.user.profileImage == null}"
+                            style="width: 100px; height: 100px; border-radius: 50%; background: var(--primary); color: white; display: flex; align-items: center; justify-content: center; font-size: 2.5rem; margin: 0 auto; border: 2px solid white;">
+                            <span
+                                th:text="${artist.artistName != null ? artist.artistName.substring(0,1).toUpperCase() : 'A'}">A</span>
+                        </div>
+                    </div>
+
+                    <div class="custom-file-wrapper" style="max-width: 300px; margin: 0 auto 1rem auto;">
+                        <input type="file" id="profileImageFile" name="profileImageFile" class="custom-file-input"
+                            accept="image/*" onchange="updateFileName(this)">
+                        <label for="profileImageFile" class="custom-file-label">🖼️ Change Picture</label>
+                    </div>
+
+                    <div th:if="${artist.user.profileImage != null}"
+                        style="display: flex; align-items: center; justify-content: center; gap: 0.5rem;">
+                        <input type="checkbox" id="removeProfileImage" name="removeProfileImage">
+                        <label for="removeProfileImage"
+                            style="margin: 0; font-weight: normal; font-size: 0.9rem; color: #e74c3c;">Remove current
+                            picture</label>
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="artistName">Artist Name</label>
+                    <input type="text" id="artistName" th:field="*{artistName}" class="form-control"
+                        placeholder="Enter your display name">
+                </div>
+
+                <div class="form-group">
+                    <label for="genre">Genre</label>
+                    <input type="text" id="genre" th:field="*{genre}" class="form-control"
+                        placeholder="Primary Music Genre">
+                </div>
+
+                <div class="form-group">
+                    <label for="website">Website</label>
+                    <input type="url" id="website" th:field="*{website}" class="form-control"
+                        placeholder="https://yourwebsite.com">
+                </div>
+
+                <div class="form-group">
+                    <label for="instagram">Instagram</label>
+                    <div style="display: flex; align-items: center;">
+                        <span style="margin-right: 0.5rem; font-weight: bold;">@</span>
+                        <input type="text" id="instagram" th:field="*{instagram}" class="form-control"
+                            placeholder="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="twitter">Twitter</label>
+                    <div style="display: flex; align-items: center;">
+                        <span style="margin-right: 0.5rem; font-weight: bold;">@</span>
+                        <input type="text" id="twitter" th:field="*{twitter}" class="form-control"
+                            placeholder="username">
+                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="youtube">YouTube Channel</label>
+                    <input type="text" id="youtube" th:field="*{youtube}" class="form-control"
+                        placeholder="Channel Name or URL">
+                </div>
+
+                <div style="display: flex; gap: 1rem; margin-top: 2rem;">
+                    <button type="submit" class="btn btn-primary">Save Changes</button>
+                    <a th:href="@{/artist/settings}" class="btn"
+                        style="background: transparent; border: 1px solid var(--text-secondary); color: var(--text-primary); text-decoration: none; text-align: center;">Cancel</a>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Enhanced Music Player -->
+    <div th:replace="~{artist/dashboard :: #musicPlayer}"></div>
+
+    <script th:src="@{/js/player.js}"></script>
+</body>
+
+</html>

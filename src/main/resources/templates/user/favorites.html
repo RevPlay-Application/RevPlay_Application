@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>My Favorites - RevPlay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body>
+    <nav class="navbar">
+        <a th:href="@{/}" class="navbar-brand">🎵 REVPLAY</a>
+        <div class="nav-links">
+            <a th:href="@{/}">Home</a>
+            <div sec:authorize="isAuthenticated()">
+                <a th:href="@{/user/favorites}" class="active">Favorites</a>
+                <a th:href="@{/user/playlists}">Playlists</a>
+                <a th:href="@{/user/history}">History</a>
+
+                <div class="profile-menu">
+                    <div class="profile-circle" th:if="${currentUser != null && currentUser.profileImage != null}">
+                        <img th:src="@{/user/profile-image/{id}(id=${currentUser.userId})}"
+                            style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover;">
+                    </div>
+                    <div class="profile-circle" th:if="${currentUser == null || currentUser.profileImage == null}"
+                        th:text="${#authentication.name != null && #authentication.name.length() > 0 ? #authentication.name.substring(0,1).toUpperCase() : 'U'}">
+                        U</div>
+                    <div class="profile-dropdown">
+                        <a th:href="@{/artist/dashboard}" sec:authorize="hasRole('ARTIST')">Dashboard</a>
+                        <a th:href="@{/artist/settings}" sec:authorize="hasRole('ARTIST')">Settings</a>
+                        <a th:href="@{/logout}">Logout</a>
+                    </div>
+                </div>
+            </div>
+            <a th:href="@{/login}" sec:authorize="!isAuthenticated()">Login</a>
+            <a th:href="@{/register}" sec:authorize="!isAuthenticated()">Register</a>
+        </div>
+    </nav>
+
+    <div class="container" id="main-content">
+        <h1>My Favorite Songs</h1>
+        <p th:if="${favorites.empty}">No favorites yet. Go explore!</p>
+
+        <div class="song-list">
+            <div th:each="fav : ${favorites}" class="card"
+                style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; padding: 1rem;">
+                <div style="display: flex; align-items: center;">
+                    <img th:src="@{/songs/cover/{id}(id=${fav.song.songId})}"
+                        onerror="this.src='/images/music-placeholder.svg'"
+                        style="width: 50px; height: 50px; border-radius: 4px; margin-right: 1rem; object-fit: cover;">
+                    <div>
+                        <h3 th:text="${fav.song.title}" style="margin: 0; font-size: 1.1rem;">Song Title</h3>
+                        <p th:text="${fav.song.artist.artistName}"
+                            style="margin: 0; font-size: 0.9rem; color: var(--text-secondary);">Artist</p>
+                    </div>
+                </div>
+                <div>
+                    <button class="btn btn-primary play-btn" th:data-id="${fav.song.songId}"
+                        th:data-title="${fav.song.title}" th:data-artist="${fav.song.artist.artistName}"
+                        th:data-album-id="${fav.song.album != null ? fav.song.album.albumId : 'null'}">Play</button>
+                    <!-- Improved remove button logic -->
+                    <form th:action="@{/user/favorites/remove/{id}(id=${fav.favoriteId})}" method="post"
+                        style="display: inline;">
+                        <button type="submit" class="btn"
+                            style="background: transparent; border: 1px solid var(--primary); color: var(--primary); margin-left: 0.5rem;">Remove</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Enhanced Music Player -->
+    <div th:replace="~{artist/dashboard :: #musicPlayer}"></div>
+
+    <script th:src="@{/js/player.js}"></script>
+</body>
+
+</html>

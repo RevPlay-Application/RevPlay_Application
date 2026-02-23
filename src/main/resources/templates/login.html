@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+
+<head>
+    <meta charset="UTF-8">
+    <title>Login - RevPlay</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+
+<body style="display: flex; justify-content: center; align-items: center; height: 100vh;">
+    <div class="card" style="width: 100%; max-width: 400px;">
+        <h2 style="text-align: center; margin-bottom: 2rem;">Login to RevPlay</h2>
+
+        <div th:if="${param.error}"
+            style="background: #e74c3c; padding: 10px; margin-bottom: 1rem; border-radius: 4px;">
+            Invalid username or password.
+        </div>
+        <div th:if="${param.logout}"
+            style="background: #3498db; padding: 10px; margin-bottom: 1rem; border-radius: 4px;">
+            You have been logged out.
+        </div>
+        <div th:if="${param.success}"
+            style="background: #1DB954; padding: 10px; margin-bottom: 1rem; border-radius: 4px;">
+            Registration successful! Please login.
+        </div>
+
+        <form th:action="@{/login}" method="post">
+            <div class="form-group">
+                <label>Username</label>
+                <input type="text" name="username" class="form-control" required>
+            </div>
+            <div class="form-group">
+                <label>Password</label>
+                <input type="password" name="password" class="form-control" required>
+            </div>
+            <button type="submit" class="btn btn-primary" style="width: 100%;">Login</button>
+        </form>
+        <p style="text-align: center; margin-top: 1.5rem;">
+            Don't have an account? <a th:href="@{/register}" style="color: var(--primary);">Register here</a>
+        </p>
+    </div>
+    <script>
+        // Auto-hide messages after 5 seconds
+        setTimeout(() => {
+            const messages = document.querySelectorAll('div[th\\:if]');
+            messages.forEach(msg => {
+                msg.style.transition = 'opacity 1s ease';
+                msg.style.opacity = '0';
+                setTimeout(() => msg.remove(), 1000);
+            });
+        }, 5000);
+    </script>
+</body>
+
+</html>
