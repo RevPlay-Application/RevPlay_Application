@@ -27,6 +27,14 @@ public class UserIdentityServiceImpl implements UserIdentityService {
     @Override
     @Transactional
     public User registerSubscriber(String email, String username, String password, String displayName) {
+        if (userRepository.existsByEmail(email)) {
+            throw new com.revature.revplay.customexceptions.UserAlreadyExistsException(
+                    "Email already exists: " + email);
+        }
+        if (userRepository.existsByUsername(username)) {
+            throw new com.revature.revplay.customexceptions.UserAlreadyExistsException(
+                    "Username already exists: " + username);
+        }
         User user = new User();
         user.setEmail(email);
         user.setUsername(username);
@@ -39,6 +47,14 @@ public class UserIdentityServiceImpl implements UserIdentityService {
     @Override
     @Transactional
     public User registerArtist(String email, String username, String password, String artistName, String genre) {
+        if (userRepository.existsByEmail(email)) {
+            throw new com.revature.revplay.customexceptions.UserAlreadyExistsException(
+                    "Email already exists: " + email);
+        }
+        if (userRepository.existsByUsername(username)) {
+            throw new com.revature.revplay.customexceptions.UserAlreadyExistsException(
+                    "Username already exists: " + username);
+        }
         User user = new User();
         user.setEmail(email);
         user.setUsername(username);

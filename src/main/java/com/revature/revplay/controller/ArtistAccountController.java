@@ -34,10 +34,15 @@ public class ArtistAccountController {
             @RequestParam String artistName,
             @RequestParam String bio,
             @RequestParam String genre,
+            @RequestParam(required = false) String instagram,
+            @RequestParam(required = false) String twitter,
+            @RequestParam(required = false) String youtube,
+            @RequestParam(required = false) String website,
             @RequestParam(required = false) MultipartFile imageFile) {
         if (user == null)
             return "redirect:/login";
-        profileManagementService.updateArtistProfile(user.getUserId(), artistName, bio, genre, imageFile);
+        profileManagementService.updateArtistProfile(user.getUserId(), artistName, bio, genre,
+                instagram, twitter, youtube, website, imageFile);
         return "redirect:/artist/dashboard?updated=true";
     }
 }

@@ -7,7 +7,8 @@ import org.springframework.web.multipart.MultipartFile;
 public interface ProfileManagementService {
     User updateUserProfile(Long userId, String displayName, String bio, MultipartFile profileImage);
 
-    Artist updateArtistProfile(Long userId, String artistName, String bio, String genre, MultipartFile bannerImage);
+    Artist updateArtistProfile(Long userId, String artistName, String bio, String genre,
+            String instagram, String twitter, String youtube, String website, MultipartFile bannerImage);
 
     Artist getArtistByUserId(Long userId);
 }

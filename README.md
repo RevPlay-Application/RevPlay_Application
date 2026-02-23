@@ -55,13 +55,13 @@ src/
 │   ├── java/com/revature/revplay/
 │   │   ├── config/          # Spring Security configuration
 │   │   ├── controller/      # MVC Controllers
+│   │   ├── customexceptions/# Global exception handlers & custom classes
 │   │   ├── model/           # JPA Entity classes
 │   │   ├── repository/      # Spring Data JPA Repositories
 │   │   ├── service/         # Business logic services
 │   │   └── utils/           # Utility classes (e.g. Base64Util)
 │   └── resources/
 │       ├── static/css/      # Global stylesheet (style.css)
-│       ├── static/js/       # JavaScript (music player)
 │       ├── static/images/   # Static assets
 │       └── templates/       # Thymeleaf HTML templates
 ```
@@ -171,7 +171,7 @@ erDiagram
 
 **Music Discovery:**
 - ✅ Browse music library with all available songs
-- ✅ View song details (title, artist, album, duration, genre, release date)
+- [ ] View song details (title, artist, album, duration, genre, release date)
 
 ---
 
@@ -188,7 +188,7 @@ erDiagram
 
 **As a Musician/Artist, I should be able to:**
 - [ ] View my artist profile as users see it
-- [ ] Add social media links (Instagram, Twitter, YouTube, Spotify, Website)
+- ✅ Add social media links (Instagram, X, YouTube, Website)
 
 ---
 
@@ -270,9 +270,11 @@ erDiagram
 
 ---
 
-## 📝 Notes
+## 📝 Technical Notes & Polish
 
-- Profile images and song cover images are stored as BLOBs in the Oracle database and served as Base64 Data URIs.
-- Audio files are stored as BLOBs and streamed directly from the database.
-- Spring Security handles all authentication. The navbar is only visible after login.
-- `spring.jpa.hibernate.ddl-auto=update` is used — the schema is managed by Hibernate automatically.
+- **Performance:** Replaced external Google Fonts with system-standard **Trebuchet MS** to eliminate blocking CDN requests and improve load times.
+- **Error Handling:** Implemented a **Global Exception Handling** system with custom exceptions (`ResourceNotFoundException`, `UserAlreadyExistsException`, `InvalidFileException`) and a thematic error return page.
+- **Code Health:** Performed a full project refactor, removing unused CSS, dead directory structures, and orphaned service methods.
+- **UI Consistency:** Custom-styled all form elements (dropdowns, inputs) with an orange/snow design system, ensuring a premium "wow" factor across all pages.
+- **Data URIs:** Profile and banner images are served as Base64 Data URIs directly from the Oracle BLOB store to minimize complex file system management.
+- **Security:** Spring Security 6 integration using modern lambda-based DSL and role-based access control.
