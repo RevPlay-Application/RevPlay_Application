@@ -1,5 +1,7 @@
 package com.revature.revplay.service.impl;
 
+import com.revature.revplay.customexceptions.InvalidFileException;
+import com.revature.revplay.customexceptions.ResourceNotFoundException;
 import com.revature.revplay.model.Artist;
 import com.revature.revplay.model.User;
 import com.revature.revplay.repository.ArtistRepository;
@@ -25,7 +27,8 @@ public class ProfileManagementServiceImpl implements ProfileManagementService {
     @Override
     @Transactional
     public User updateUserProfile(Long userId, String displayName, String bio, MultipartFile profileImage) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         user.setDisplayName(displayName);
         user.setBio(bio);
 
@@ -33,7 +36,7 @@ public class ProfileManagementServiceImpl implements ProfileManagementService {
             try {
                 user.setProfileImage(profileImage.getBytes());
             } catch (IOException e) {
-                throw new RuntimeException("Failed to store profile image", e);
+                throw new InvalidFileException("Failed to store profile image: " + e.getMessage());
             }
         }
 
@@ -43,13 +46,20 @@ public class ProfileManagementServiceImpl implements ProfileManagementService {
     @Override
     @Transactional
     public Artist updateArtistProfile(Long userId, String artistName, String bio, String genre,
+            String instagram, String twitter, String youtube, String website,
             MultipartFile bannerImage) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         Artist artist = artistRepository.findByUser(user)
-                .orElseThrow(() -> new RuntimeException("Artist record not found"));
+                .orElseThrow(
+                        () -> new ResourceNotFoundException("Artist record not found for user: " + user.getUsername()));
 
         artist.setArtistName(artistName);
         artist.setGenre(genre);
+        artist.setInstagram(instagram);
+        artist.setTwitter(twitter);
+        artist.setYoutube(youtube);
+        artist.setWebsite(website);
         user.setDisplayName(artistName);
         user.setBio(bio);
 
@@ -57,7 +67,7 @@ public class ProfileManagementServiceImpl implements ProfileManagementService {
             try {
                 artist.setBannerImage(bannerImage.getBytes());
             } catch (IOException e) {
-                throw new RuntimeException("Failed to store banner image", e);
+                throw new InvalidFileException("Failed to store banner image: " + e.getMessage());
             }
         }
 
@@ -67,12 +77,8 @@ public class ProfileManagementServiceImpl implements ProfileManagementService {
 
     @Override
     public Artist getArtistByUserId(Long userId) {
-        User user = userRepository.findById(userId).orElseThrow(() -> new RuntimeException("User not found"));
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new ResourceNotFoundException("User not found with id: " + userId));
         return artistRepository.findByUser(user).orElse(null);
-    }
-
-    @Override
-    public User getUserById(Long userId) {
-        return userRepository.findById(userId).orElse(null);
     }
 }

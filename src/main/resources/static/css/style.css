@@ -1,18 +1,16 @@
 :root {
     --primary-orange: #FF8C00;
-    --primary-orange-glow: rgba(255, 140, 0, 0.4);
     --bg-white: #FFFFFF;
     --bg-snow: #F8F9FA;
     --text-charcoal: #1A1A1A;
     --text-gray: #6C757D;
     --border-light: #E9ECEF;
     --card-shadow: 0 10px 30px rgba(0, 0, 0, 0.05);
-
-    /* Dark Mode Defaults */
-    --transition-speed: 0.3s;
 }
 
-/* Bootstrap Button Overrides */
+/* ============================================================
+   Bootstrap Button Overrides
+   ============================================================ */
 .btn-orange {
     background-color: var(--primary-orange);
     color: white;
@@ -26,7 +24,7 @@
     background-color: #e67e22;
     color: white;
     transform: translateY(-2px);
-    box-shadow: 0 5px 15px var(--primary-orange-glow);
+    box-shadow: 0 5px 15px rgba(255, 140, 0, 0.4);
 }
 
 .btn-outline-orange {
@@ -43,8 +41,11 @@
     color: white;
 }
 
+/* ============================================================
+   Base / Global
+   ============================================================ */
 body {
-    font-family: 'Outfit', sans-serif;
+    font-family: 'Trebuchet MS', sans-serif;
     background-color: var(--bg-snow);
     color: var(--text-charcoal);
     margin: 0;
@@ -55,7 +56,13 @@ a {
     color: inherit;
 }
 
-/* Navigation & General UI */
+.orange-text {
+    color: var(--primary-orange);
+}
+
+/* ============================================================
+   Navigation
+   ============================================================ */
 .navbar {
     background: var(--bg-white);
     border-bottom: 2px solid var(--primary-orange);
@@ -83,33 +90,9 @@ a {
     color: var(--primary-orange) !important;
 }
 
-/* Global Responsiveness */
-@media (max-width: 991.98px) {
-    .navbar {
-        padding: 0.2rem 0.5rem !important;
-    }
-
-    .hero h1 {
-        font-size: 2.5rem;
-    }
-}
-
-@media (max-width: 767.98px) {
-    .hero h1 {
-        font-size: 2rem;
-    }
-
-    .hero p {
-        font-size: 1rem !important;
-    }
-
-    .auth-container {
-        margin: 2rem 1rem;
-        padding: 2rem !important;
-    }
-}
-
-/* Hero Section */
+/* ============================================================
+   Hero Section
+   ============================================================ */
 .hero {
     padding: 1.5rem 1rem;
     text-align: center;
@@ -121,51 +104,9 @@ a {
     margin-bottom: 0.5rem;
 }
 
-.orange-text {
-    color: var(--primary-orange);
-}
-
-/* Music Grid */
-.music-grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
-    gap: 1.5rem;
-    padding: 1rem;
-}
-
-.song-card {
-    background: var(--bg-white);
-    border-radius: 20px;
-    padding: 1rem;
-    text-align: center;
-    box-shadow: var(--card-shadow);
-    transition: transform 0.3s;
-    border: 1px solid var(--border-light);
-}
-
-.song-card:hover {
-    transform: scale(1.05);
-}
-
-.song-img {
-    width: 100%;
-    aspect-ratio: 1;
-    border-radius: 15px;
-    object-fit: cover;
-    margin-bottom: 1rem;
-}
-
-.song-title {
-    font-weight: 700;
-    margin-bottom: 0.2rem;
-}
-
-.song-artist {
-    color: var(--text-gray);
-    font-size: 0.9rem;
-}
-
-/* Auth Pages */
+/* ============================================================
+   Auth Pages (Login / Register)
+   ============================================================ */
 .auth-container {
     max-width: 450px;
     margin: 5rem auto;
@@ -176,59 +117,16 @@ a {
     border: 1px solid var(--border-light);
 }
 
-.form-group {
-    margin-bottom: 1.5rem;
-}
-
-.form-group label {
-    display: block;
-    margin-bottom: 0.5rem;
-    font-weight: 600;
-}
-
-.form-input {
-    width: 100%;
-    padding: 1rem;
-    border-radius: 12px;
-    border: 2px solid var(--border-light);
-    background: var(--bg-snow);
-    color: var(--text-charcoal);
-    box-sizing: border-box;
-}
-
-.form-input:focus {
-    outline: none;
-    border-color: var(--primary-orange);
-}
-
+/* ============================================================
+   Artist Banner
+   ============================================================ */
 .banner-container {
     height: 250px;
 }
 
-@media (max-width: 768px) {
-    .banner-container {
-        height: 140px;
-    }
-}
-
-/* Profile Section */
-.profile-header {
-    display: flex;
-    align-items: center;
-    gap: 2rem;
-    padding: 3rem 2rem;
-    background: var(--bg-white);
-    border-bottom: 1px solid var(--border-light);
-}
-
-.profile-avatar {
-    width: 150px;
-    height: 150px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 4px solid var(--primary-orange);
-}
-
+/* ============================================================
+   Toast Notification
+   ============================================================ */
 .toast {
     position: fixed;
     bottom: 2rem;
@@ -250,5 +148,40 @@ a {
     to {
         opacity: 1;
         transform: translateY(0);
+    }
+}
+
+/* ============================================================
+   Responsive — Tablet (max 991.98px)
+   ============================================================ */
+@media (max-width: 991.98px) {
+    .navbar {
+        padding: 0.2rem 0.5rem !important;
+    }
+
+    .hero h1 {
+        font-size: 2.5rem;
+    }
+}
+
+/* ============================================================
+   Responsive — Mobile (max 767.98px)
+   ============================================================ */
+@media (max-width: 767.98px) {
+    .hero h1 {
+        font-size: 2rem;
+    }
+
+    .hero p {
+        font-size: 1rem !important;
+    }
+
+    .auth-container {
+        margin: 2rem 1rem;
+        padding: 2rem !important;
+    }
+
+    .banner-container {
+        height: 140px;
     }
 }

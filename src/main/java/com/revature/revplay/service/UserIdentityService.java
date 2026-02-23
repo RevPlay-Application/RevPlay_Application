@@ -9,8 +9,6 @@ public interface UserIdentityService {
 
     User findUserByUsername(String username);
 
-    User findUserByEmail(String email);
-
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);

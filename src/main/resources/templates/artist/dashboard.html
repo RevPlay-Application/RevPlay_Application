@@ -6,7 +6,6 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Artist Studio | RevPlay</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;800&display=swap" rel="stylesheet">
     <link rel="stylesheet" th:href="@{/css/style.css}">
     <style>
         .studio-card {
@@ -90,7 +89,35 @@
             <div class="col-lg-8 mb-4 mb-lg-0">
                 <h1 class="display-4 fw-bold mb-2">Welcome, <span class="orange-text"
                         th:text="${artist.artistName}">Artist</span></h1>
-                <p class="text-muted fs-5 mb-0">Manage your music, track your growth, and connect with fans.</p>
+                <p class="text-muted fs-5 mb-2">Manage your music, track your growth, and connect with fans.</p>
+
+                <!-- Social Media Links Row -->
+                <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start mt-2">
+                    <a th:if="${artist.instagram != null and !artist.instagram.isEmpty()}" th:href="${artist.instagram}"
+                        target="_blank" rel="noopener"
+                        class="badge rounded-pill text-decoration-none px-3 py-2 fw-semibold"
+                        style="background:#E1306C;color:white;font-size:0.8rem;">
+                        📸 Instagram
+                    </a>
+                    <a th:if="${artist.twitter != null and !artist.twitter.isEmpty()}" th:href="${artist.twitter}"
+                        target="_blank" rel="noopener"
+                        class="badge rounded-pill text-decoration-none px-3 py-2 fw-semibold"
+                        style="background:#1DA1F2;color:white;font-size:0.8rem;">
+                     X
+                    </a>
+                    <a th:if="${artist.youtube != null and !artist.youtube.isEmpty()}" th:href="${artist.youtube}"
+                        target="_blank" rel="noopener"
+                        class="badge rounded-pill text-decoration-none px-3 py-2 fw-semibold"
+                        style="background:#FF0000;color:white;font-size:0.8rem;">
+                        ▶️ YouTube
+                    </a>
+                    <a th:if="${artist.website != null and !artist.website.isEmpty()}" th:href="${artist.website}"
+                        target="_blank" rel="noopener"
+                        class="badge rounded-pill text-decoration-none px-3 py-2 fw-semibold"
+                        style="background:#FF8C00;color:white;font-size:0.8rem;">
+                        🌐 Website
+                    </a>
+                </div>
             </div>
             <div class="col-lg-4 text-lg-end">
                 <button class="btn btn-orange px-4 py-2 rounded-pill fw-bold shadow-sm" data-bs-toggle="modal"
@@ -177,6 +204,36 @@
                                         <input type="file" name="imageFile" class="form-control" accept="image/*">
                                     </div>
                                 </div>
+
+                                <!-- Social Media Links -->
+                                <div class="mb-3">
+                                    <label class="form-label fw-semibold">🔗 Social Media Links</label>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text bg-white border-end-0"
+                                            style="min-width:44px;">📸</span>
+                                        <input type="url" name="instagram" class="form-control border-start-0"
+                                            placeholder="Instagram URL" th:value="${artist.instagram}">
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text bg-white border-end-0"
+                                            style="min-width:44px;">✖️</span>
+                                        <input type="url" name="twitter" class="form-control border-start-0"
+                                            placeholder="X URL" th:value="${artist.twitter}">
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text bg-white border-end-0"
+                                            style="min-width:44px;">▶️</span>
+                                        <input type="url" name="youtube" class="form-control border-start-0"
+                                            placeholder="YouTube Channel URL" th:value="${artist.youtube}">
+                                    </div>
+                                    <div class="input-group mb-2">
+                                        <span class="input-group-text bg-white border-end-0"
+                                            style="min-width:44px;">🌐</span>
+                                        <input type="url" name="website" class="form-control border-start-0"
+                                            placeholder="Personal Website URL" th:value="${artist.website}">
+                                    </div>
+                                </div>
+
                                 <div class="d-grid">
                                     <button type="submit" class="btn btn-orange py-2 fw-bold">Update Studio
                                         Profile</button>
