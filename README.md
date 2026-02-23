@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 #  RevPlay – Music Streaming Web Application
 
 > [!CAUTION]
@@ -309,6 +308,4 @@ Log4J2 is configured to log:
 # 📜 License
 
 This project is developed for educational and training purposes under Revature.
-=======
 
->>>>>>> 31fd7bfa01a52a1ba9b3d8afd52ced113d4d09c0
