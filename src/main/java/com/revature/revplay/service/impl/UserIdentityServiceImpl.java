@@ -86,4 +86,20 @@ public class UserIdentityServiceImpl implements UserIdentityService {
     public boolean existsByEmail(String email) {
         return userRepository.existsByEmail(email);
     }
+
+    @Override
+    @Transactional
+    public void resetPassword(String email, String username, String newPassword) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new com.revature.revplay.customexceptions.ResourceNotFoundException(
+                        "No user found with this email: " + email));
+
+        if (!user.getUsername().equals(username)) {
+            throw new com.revature.revplay.customexceptions.UnauthorizedException(
+                    "Username does not match our records for this email.");
+        }
+
+        user.setPassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+    }
 }
