@@ -27,14 +27,22 @@
                         Registration successful! You can now log in.
                     </div>
 
+                    <div th:if="${param.reset}" class="alert alert-success mb-4 small py-2">
+                        Password has been reset! You can now log in with your new password.
+                    </div>
+
                     <form th:action="@{/login}" method="post">
                         <div class="mb-3">
                             <label class="form-label fw-semibold small">Username or Email</label>
                             <input type="text" name="username" class="form-control" placeholder="Enter your credentials"
                                 required>
                         </div>
-                        <div class="mb-4">
-                            <label class="form-label fw-semibold small">Password</label>
+                        <div class="mb-2">
+                            <div class="d-flex justify-content-between">
+                                <label class="form-label fw-semibold small">Password</label>
+                                <a href="/forgot-password"
+                                    class="orange-text small text-decoration-none fw-bold">Forgot?</a>
+                            </div>
                             <input type="password" name="password" class="form-control" placeholder="••••••••" required>
                         </div>
                         <button type="submit" class="btn btn-orange btn-lg w-100 py-2 fs-6">Sign In</button>

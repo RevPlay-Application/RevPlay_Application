@@ -43,4 +43,17 @@ public class UserAuthenticationController {
         userIdentityService.registerArtist(email, username, password, artistName, genre);
         return "redirect:/login?registered=true";
     }
+
+    @GetMapping("/forgot-password")
+    public String showForgotPasswordForm() {
+        return "forgot-password";
+    }
+
+    @PostMapping("/forgot-password")
+    public String processForgotPassword(@RequestParam String email,
+            @RequestParam String username,
+            @RequestParam String newPassword) {
+        userIdentityService.resetPassword(email, username, newPassword);
+        return "redirect:/login?reset=true";
+    }
 }

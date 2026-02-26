@@ -12,4 +12,6 @@ public interface UserIdentityService {
     boolean existsByUsername(String username);
 
     boolean existsByEmail(String email);
+
+    void resetPassword(String email, String username, String newPassword);
 }
