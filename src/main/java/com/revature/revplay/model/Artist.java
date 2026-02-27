@@ -46,9 +46,9 @@ public class Artist {
     @Column(length = 200)
     private String website;
 
-    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Album> albums = new ArrayList<>();
 
-    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "artist", cascade = CascadeType.ALL, fetch = FetchType.EAGER)
     private List<Song> songs = new ArrayList<>();
 }

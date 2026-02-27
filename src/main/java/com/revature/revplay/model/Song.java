@@ -30,9 +30,13 @@ public class Song {
     @Column(nullable = false, length = 150)
     private String title;
 
-    @Column(length = 100)
-    private String genre;
+    //@Column(length = 100)
+    //private String genre;
+    @Enumerated(EnumType.STRING)
+    @Column(length = 30)
+    private Genre genre;
 
+    @Column(name = "duration_seconds")
     private Integer duration;
 
     @Lob
@@ -43,7 +47,7 @@ public class Song {
     @Column(name = "cover_image")
     private byte[] coverImage;
 
-    @Column(name = "play_count")
+    @Column(name = "play_count", nullable = false)
     private Integer playCount = 0;
 
     @Enumerated(EnumType.STRING)

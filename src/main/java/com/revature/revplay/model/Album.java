@@ -31,6 +31,10 @@ public class Album {
     @Column(length = 500)
     private String description;
 
+    @Column
+    @Enumerated(EnumType.STRING)
+    private Genre genre;
+
     @Column(name = "release_date")
     private LocalDate releaseDate;
 
@@ -38,6 +42,6 @@ public class Album {
     @Column(name = "cover_image")
     private byte[] coverImage;
 
-    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL)
-    private List<Song> songs = new ArrayList<>();
+    @OneToMany(mappedBy = "album", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<Song> songs;
 }
