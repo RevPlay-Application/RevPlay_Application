@@ -15,16 +15,16 @@ public class GlobalControllerAttributes {
     private final com.revature.revplay.utils.Base64Util base64Util;
 
     public GlobalControllerAttributes(UserIdentityService userIdentityService,
-            com.revature.revplay.repository.ArtistRepository artistRepository,
-            com.revature.revplay.utils.Base64Util base64Util) {
+                                      com.revature.revplay.repository.ArtistRepository artistRepository,
+                                      com.revature.revplay.utils.Base64Util base64Util) {
         this.userIdentityService = userIdentityService;
         this.artistRepository = artistRepository;
         this.base64Util = base64Util;
     }
 
-    @ModelAttribute("authenticatedUser")
+    @ModelAttribute("authenticatedUser")//This makes "authenticatedUser" available in all Thymeleaf views as ${authenticatedUser}
     public User getAuthenticatedUser() {
-        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();//Gets current logged-in user authentication object.
         if (auth != null && auth.isAuthenticated() && !auth.getPrincipal().equals("anonymousUser")) {
             return userIdentityService.findUserByUsername(auth.getName());
         }

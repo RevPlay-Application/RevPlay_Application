@@ -213,3 +213,14 @@ INSERT INTO songs (artist_id, album_id, title, genre, duration, play_count, visi
 VALUES (1, 1, 'Melody 1', 'POP', 180, 10, 'PUBLIC', SYSDATE);
 
 COMMIT;
+/*
+ --For Dropping All Tables
+DROP TABLE playlist_songs CASCADE CONSTRAINTS;
+DROP TABLE favorites CASCADE CONSTRAINTS;
+DROP TABLE listening_history CASCADE CONSTRAINTS;
+DROP TABLE playlists CASCADE CONSTRAINTS;
+DROP TABLE songs CASCADE CONSTRAINTS;
+DROP TABLE albums CASCADE CONSTRAINTS;
+DROP TABLE artists CASCADE CONSTRAINTS;
+DROP TABLE users CASCADE CONSTRAINTS
+ */
