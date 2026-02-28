@@ -82,8 +82,13 @@
             </button>
 
             <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <form class="d-flex me-3" action="/browse/search" method="get">
+                    <input class="form-control me-2" type="search" name="q" placeholder="Search..." required>
+                    <button class="btn btn-orange" type="submit">Search</button>
+                </form>
                 <ul class="navbar-nav align-items-center gap-4">
                     <li class="nav-item"><a href="/" class="nav-link fw-semibold orange-text">Explorer</a></li>
+                    <li class="nav-item"><a href="/browse/filter" class="nav-link fw-semibold">Browse</a></li>
                     <li class="nav-item">
                         <a href="/profile" class="nav-link fw-semibold">My Profile</a>
                     </li>
@@ -157,13 +162,15 @@
                 <h2 class="section-title">Top <span class="orange-text">Albums</span></h2>
                 <div class="split-grid">
                     <div th:each="album : ${albums}" class="card-small">
-                        <img th:src="${@base64Util.encode(album.coverImage) ?: '/images/music-placeholder.svg'}"
-                            class="song-img-small" th:alt="${album.albumName}">
-                        <div class="mt-2 text-truncate">
-                            <h6 class="fw-bold mb-0 small" th:text="${album.albumName}">Album Name</h6>
-                            <p class="text-muted mb-0" style="font-size: 0.7rem;" th:text="${album.artist?.artistName}">
-                                Artist</p>
-                        </div>
+                        <a th:href="@{/browse/album/{id}(id=${album.albumId})}" class="text-decoration-none">
+                            <img th:src="${@base64Util.encode(album.coverImage) ?: '/images/music-placeholder.svg'}"
+                                class="song-img-small" th:alt="${album.albumName}">
+                            <div class="mt-2 text-truncate">
+                                <h6 class="fw-bold mb-0 small" th:text="${album.albumName}">Album Name</h6>
+                                <p class="text-muted mb-0" style="font-size: 0.7rem;" th:text="${album.artist?.artistName}">
+                                    Artist</p>
+                            </div>
+                        </a>
                     </div>
                 </div>
                 <div th:if="${#lists.isEmpty(albums)}"
@@ -180,13 +187,15 @@
                 <h2 class="section-title">Featured <span class="orange-text">Artists</span></h2>
                 <div class="split-grid">
                     <div th:each="artist : ${artists}" class="card-small text-center">
-                        <div class="rounded-circle overflow-hidden mb-2 mx-auto"
-                            style="width: 65px; height: 65px; border: 2px solid var(--primary-orange);">
-                            <img th:src="${@base64Util.encode(artist.user?.profileImage) ?: '/images/music-placeholder.svg'}"
-                                class="w-100 h-100 object-fit-cover" th:alt="${artist.artistName}">
-                        </div>
-                        <h6 class="fw-bold mb-0 small" th:text="${artist.artistName}">Artist Name</h6>
-                        <small class="text-muted" style="font-size: 0.7rem;" th:text="${artist.genre}">Genre</small>
+                        <a th:href="@{/browse/artist/{id}(id=${artist.artistId})}" class="text-decoration-none">
+                            <div class="rounded-circle overflow-hidden mb-2 mx-auto"
+                                style="width: 65px; height: 65px; border: 2px solid var(--primary-orange);">
+                                <img th:src="${@base64Util.encode(artist.user?.profileImage) ?: '/images/music-placeholder.svg'}"
+                                    class="w-100 h-100 object-fit-cover" th:alt="${artist.artistName}">
+                            </div>
+                            <h6 class="fw-bold mb-0 small" th:text="${artist.artistName}">Artist Name</h6>
+                            <small class="text-muted" style="font-size: 0.7rem;" th:text="${artist.genre}">Genre</small>
+                        </a>
                     </div>
                 </div>
                 <div th:if="${#lists.isEmpty(artists)}"
@@ -197,11 +206,11 @@
             <div class="col-lg-6">
                 <h2 class="section-title">Mood <span class="orange-text">Genres</span></h2>
                 <div class="d-flex flex-wrap gap-2">
-                    <div th:each="genre : ${genres}"
-                        class="genre-pill px-4 py-3 bg-white shadow-sm rounded-4 fw-bold flex-grow-1 text-center"
+                    <a th:each="genre : ${genres}" th:href="@{/browse/genre/{genre}(genre=${genre})}"
+                        class="genre-pill px-4 py-3 bg-white shadow-sm rounded-4 fw-bold flex-grow-1 text-center text-decoration-none"
                         style="cursor: pointer;">
                         <span class="orange-text small" th:text="${genre}">Pop</span>
-                    </div>
+                    </a>
                 </div>
                 <div th:if="${#lists.isEmpty(genres)}"
                     class="py-5 text-center bg-white rounded-4 border border-dashed text-muted w-100">Finding genres...
