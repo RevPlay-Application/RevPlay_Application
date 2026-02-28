@@ -38,8 +38,9 @@ public class BrowseController {
 
     @GetMapping("/genre/{genre}")
     public String browseByGenre(@PathVariable String genre, Model model) {
+        Genre genreEnum = Genre.valueOf(genre.toUpperCase());
         model.addAttribute("genre", genre);
-        model.addAttribute("songs", songRepository.findByGenreAndVisibility(genre, Visibility.PUBLIC));
+        model.addAttribute("songs", songRepository.findByGenreAndVisibility(genreEnum, Visibility.PUBLIC));
         model.addAttribute("artists", artistRepository.findByGenreContainingIgnoreCase(genre));
         return "browse/genre";
     }
@@ -70,8 +71,9 @@ public class BrowseController {
                          @RequestParam(required = false) Integer year,
                          Model model) {
         List<Song> songs;
-        if (genre != null) {
-            songs = songRepository.findByGenreAndVisibility(genre, Visibility.PUBLIC);
+        if (genre != null && !genre.isEmpty()) {
+            Genre genreEnum = Genre.valueOf(genre.toUpperCase());
+            songs = songRepository.findByGenreAndVisibility(genreEnum, Visibility.PUBLIC);
         } else if (artistId != null) {
             Artist artist = artistRepository.findById(artistId).orElseThrow();
             songs = songRepository.findByArtist(artist);
@@ -84,8 +86,7 @@ public class BrowseController {
             songs = songRepository.findByVisibility(Visibility.PUBLIC);
         }
         model.addAttribute("songs", songs);
-        model.addAttribute("genres", songRepository.findAll().stream()
-                .map(Song::getGenre).filter(g -> g != null).distinct().toList());
+        model.addAttribute("genres", Genre.values());
         model.addAttribute("artists", artistRepository.findAll());
         model.addAttribute("albums", albumRepository.findAll());
         return "browse/filter";
