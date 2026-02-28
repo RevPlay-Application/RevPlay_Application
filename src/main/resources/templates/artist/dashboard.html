@@ -70,7 +70,43 @@
                class="btn btn-secondary action-btn">
                 Create Album
             </a>
-
+                <!-- Social Media Links Row -->
+                <div class="d-flex flex-wrap gap-2 justify-content-center justify-content-lg-start mt-2">
+                    <a th:if="${artist.instagram != null and !artist.instagram.isEmpty()}" th:href="${artist.instagram}"
+                        target="_blank" rel="noopener"
+                        class="badge rounded-pill text-decoration-none px-3 py-2 fw-semibold"
+                        style="background:#E1306C;color:white;font-size:0.8rem;">
+                        📸 Instagram
+                    </a>
+                    <a th:if="${artist.twitter != null and !artist.twitter.isEmpty()}" th:href="${artist.twitter}"
+                        target="_blank" rel="noopener"
+                        class="badge rounded-pill text-decoration-none px-3 py-2 fw-semibold"
+                        style="background:#1DA1F2;color:white;font-size:0.8rem;">
+                     X
+                    </a>
+                    <a th:if="${artist.youtube != null and !artist.youtube.isEmpty()}" th:href="${artist.youtube}"
+                        target="_blank" rel="noopener"
+                        class="badge rounded-pill text-decoration-none px-3 py-2 fw-semibold"
+                        style="background:#FF0000;color:white;font-size:0.8rem;">
+                        ▶️ YouTube
+                    </a>
+                    <a th:if="${artist.website != null and !artist.website.isEmpty()}" th:href="${artist.website}"
+                        target="_blank" rel="noopener"
+                        class="badge rounded-pill text-decoration-none px-3 py-2 fw-semibold"
+                        style="background:#FF8C00;color:white;font-size:0.8rem;">
+                        🌐 Website
+                    </a>
+                </div>
+            </div>
+            <div class="col-lg-4 text-lg-end">
+                <a th:href="@{/browse/artist/{id}(id=${artist.artistId})}" class="btn btn-outline-orange px-4 py-2 rounded-pill fw-bold shadow-sm me-2">
+                    👁️ View Public Profile
+                </a>
+                <button class="btn btn-orange px-4 py-2 rounded-pill fw-bold shadow-sm" data-bs-toggle="modal"
+                    data-bs-target="#editStudioModal">
+                    🎨 Customize Studio
+                </button>
+            </div>
         </div>
     </div>
 
