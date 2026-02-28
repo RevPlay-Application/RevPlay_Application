@@ -205,11 +205,22 @@ INSERT INTO users (email, username, password, role, display_name) VALUES ('admin
 INSERT INTO users (email, username, password, role, display_name) VALUES ('artist1@revplay.com', 'artist1', 'password', 'ARTIST', 'John Doe');
 INSERT INTO users (email, username, password, role, display_name) VALUES ('user1@revplay.com', 'user1', 'password', 'USER', 'Jane Smith');
 
-INSERT INTO artists (user_id, artist_name, genre) VALUES (2, 'John Doe', 'Pop');
+INSERT INTO artists (user_id, artist_name, genre) VALUES (2, 'John Doe', 'POP');
 
 INSERT INTO albums (artist_id, album_name, release_date) VALUES (1, 'First Tracks', SYSDATE);
 
 INSERT INTO songs (artist_id, album_id, title, genre, duration, play_count, visibility, release_date) 
-VALUES (1, 1, 'Melody 1', 'Pop', 180, 10, 'PUBLIC', SYSDATE);
+VALUES (1, 1, 'Melody 1', 'POP', 180, 10, 'PUBLIC', SYSDATE);
 
 COMMIT;
+/*
+ --For Dropping All Tables
+DROP TABLE playlist_songs CASCADE CONSTRAINTS;
+DROP TABLE favorites CASCADE CONSTRAINTS;
+DROP TABLE listening_history CASCADE CONSTRAINTS;
+DROP TABLE playlists CASCADE CONSTRAINTS;
+DROP TABLE songs CASCADE CONSTRAINTS;
+DROP TABLE albums CASCADE CONSTRAINTS;
+DROP TABLE artists CASCADE CONSTRAINTS;
+DROP TABLE users CASCADE CONSTRAINTS
+ */
