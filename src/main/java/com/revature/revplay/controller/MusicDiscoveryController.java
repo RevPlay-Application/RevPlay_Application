@@ -34,7 +34,7 @@ public class MusicDiscoveryController {
         // Extract unique genres
         var genres = songs.stream()
                 .map(s -> s.getGenre())
-                .filter(g -> g != null && !g.isEmpty())
+                .filter(g -> g != null)
                 .distinct()
                 .toList();
         model.addAttribute("genres", genres);
