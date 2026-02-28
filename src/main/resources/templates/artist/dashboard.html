@@ -54,6 +54,12 @@
         </h2>
 
         <div class="d-flex gap-3">
+            <!-- View Public Profile Button -->
+            <a th:href="@{/browse/artist/{id}(id=${artist.artistId})}"
+               class="btn btn-outline-warning action-btn">
+                👁️ View Public Profile
+            </a>
+
             <!-- Redirect Buttons -->
             <a th:href="@{/artist/song/upload}"
                class="btn btn-warning action-btn">
