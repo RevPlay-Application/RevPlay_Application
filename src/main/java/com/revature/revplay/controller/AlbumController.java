@@ -4,6 +4,7 @@ import com.revature.revplay.model.*;
 import com.revature.revplay.service.AlbumService;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.http.converter.json.GsonBuilderUtils;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -70,5 +71,39 @@ public class AlbumController {
         albumService.deleteAlbum(id, user);
 
         return "redirect:/artist/dashboard?albumDeleted=true";
+
+
+    }
+
+    @GetMapping("/edit/{id}")
+    public String editAlbumPage(@PathVariable Long id,
+                                @ModelAttribute("authenticatedUser") User user,
+                                Model model) {
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Album album = albumService.getAlbumById(id);
+
+        model.addAttribute("album", album);
+
+        return "artist/manage-album";
+    }
+
+    @PostMapping("/update")
+    public String updateAlbum(@ModelAttribute("authenticatedUser") User user,
+                              @RequestParam Long albumId,
+                              @RequestParam String albumName,
+                              @RequestParam(required = false) Genre genre,
+                              @RequestParam(required = false) String description,
+                              @RequestParam(required = false) MultipartFile coverImage)
+            throws IOException {
+
+        if (user == null) return "redirect:/login";
+
+        albumService.updateAlbum(albumId, albumName, genre, description, coverImage);
+
+        return "redirect:/artist/dashboard?albumUpdated=true";
     }
 }

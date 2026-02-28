@@ -88,6 +88,12 @@ public class SongServiceImpl implements SongService {
 
         Song song = getSongById(songId);
 
+        // 🔐 SECURITY CHECK
+        if (!song.getArtist().getUser().getUserId()
+                .equals(user.getUserId())) {
+            throw new RuntimeException("Unauthorized");
+        }
+
         song.setTitle(title);
         song.setGenre(genre);
         song.setDuration(duration);

@@ -70,4 +70,44 @@ public class SongController {
 
         return "redirect:/artist/dashboard?songDeleted=true";
     }
+
+    @GetMapping("/edit/{id}")
+    public String editSongPage(@PathVariable Long id,
+                               @ModelAttribute("authenticatedUser") User user,
+                               Model model) {
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        Song song = songService.getSongById(id);
+        List<Album> albums = songService.getAlbumsByArtist(user);
+
+        model.addAttribute("song", song);
+        model.addAttribute("albums", albums);
+
+        return "artist/manage-song";
+    }
+
+    @PostMapping("/update")
+    public String updateSong(@ModelAttribute("authenticatedUser") User user,
+                             @RequestParam Long songId,
+                             @RequestParam String title,
+                             @RequestParam Genre genre,
+                             @RequestParam Integer duration,
+                             @RequestParam(required = false) String releaseDate,
+                             @RequestParam Visibility visibility,
+                             @RequestParam(required = false) Long albumId,
+                             @RequestParam(required = false) MultipartFile audioFile)
+            throws IOException {
+
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        songService.updateSong(user, songId, title, genre, duration,
+                releaseDate, visibility, albumId, audioFile);
+
+        return "redirect:/artist/dashboard?songUpdated=true";
+    }
 }
