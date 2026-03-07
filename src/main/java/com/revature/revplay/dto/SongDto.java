@@ -1,4 +1,3 @@
-// ####################################### Person1 CODE START #########################################
 package com.revature.revplay.dto;
 
 import lombok.Data;
