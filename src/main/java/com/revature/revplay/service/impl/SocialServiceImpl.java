@@ -48,6 +48,12 @@ public class SocialServiceImpl implements SocialService {
         this.songRepository = songRepository;
     }
 
+    @Override
+    @Transactional
+    public boolean toggleFollow(String username, Long artistId) {
+        return toggleFollowArtist(artistId, username);
+    }
+
     /**
      * Atomically toggles the "Follow" state between a user and a target artist.
      * 

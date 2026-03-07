@@ -150,6 +150,15 @@ public class MediaController {
     }
 
 // ####################################### Person2 CODE START #########################################
-
+    @GetMapping("/artist/{id}/banner")
+    public ResponseEntity<byte[]> getArtistBanner(@PathVariable("id") Long id) {
+        ArtistProfile profile = artistProfileRepository.findById(id).orElse(null);
+        if (profile == null || profile.getBannerImage() == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
+        }
+        return ResponseEntity.ok()
+                .header(HttpHeaders.CONTENT_TYPE, "image/jpeg")
+                .body(profile.getBannerImage());
+    }
 // ######################################## Person2 CODE END ##########################################
 }

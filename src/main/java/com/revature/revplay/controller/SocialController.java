@@ -68,7 +68,20 @@ public class SocialController {
      */
 
 // ####################################### Person2 CODE START #########################################
-
+    @PostMapping("/follow/{artistId}")
+    @ResponseBody
+    public ResponseEntity<Boolean> toggleFollow(@PathVariable Long artistId, Authentication auth) {
+        if (auth == null) {
+            return ResponseEntity.status(401).build();
+        }
+        try {
+            boolean isFollowing = socialService.toggleFollow(auth.getName(), artistId);
+            return ResponseEntity.ok(isFollowing);
+        } catch (Exception e) {
+            log.error("Error toggling follow", e);
+            return ResponseEntity.status(500).build();
+        }
+    }
 // ######################################## Person2 CODE END ##########################################
 /**
      * Renders a dashboard of the most popular content currently on the platform.

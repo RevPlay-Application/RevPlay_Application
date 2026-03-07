@@ -33,7 +33,7 @@ public interface SocialService {
      */
 
 // ####################################### Person2 CODE START #########################################
-
+    boolean toggleFollow(String username, Long artistId);
 // ######################################## Person2 CODE END ##########################################
 /**
      * Aggregates the total audience size for a specific music creator.

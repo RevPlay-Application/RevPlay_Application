@@ -40,6 +40,10 @@ public class ArtistProfile {
     @Transient
     private String bannerImageUrl;
     
+    public String getBannerImageUrl() {
+        return (this.bannerImage != null) ? "/api/media/artist/" + this.id + "/banner" : null;
+    }
+    
     @Column(columnDefinition = "CLOB")
     private String bio;
     
