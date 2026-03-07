@@ -19,6 +19,8 @@ import java.util.List;
 
 // ####################################### Person2 CODE START #########################################
 public interface SearchService {
-
+    SearchResultDto searchAll(String keyword);
+    List<Song> filterSongs(String title, String genre, Long artistId, Long albumId, Integer releaseYear);
+    List<String> getAllGenres();
 }
 // ######################################## Person2 CODE END ##########################################

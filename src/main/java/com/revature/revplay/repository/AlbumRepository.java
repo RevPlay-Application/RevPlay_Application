@@ -36,4 +36,8 @@ public interface AlbumRepository extends JpaRepository<Album, Long> {
      * dashboard.
      */
     List<Album> findByArtist(User artist);
+    
+// ####################################### Person2 CODE START #########################################
+    List<Album> findAllByOrderByReleaseDateDesc();
+// ######################################## Person2 CODE END ##########################################
 }

@@ -23,6 +23,31 @@ import lombok.*;
 @Builder
 // ####################################### Person2 CODE START #########################################
 public class ArtistProfile {
+    @Id
+    private Long id;
+
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    private User user;
+
+    private String artistName;
+    private String genre;
+    
+    @Lob
+    private byte[] bannerImage;
+    
+    @Transient
+    private String bannerImageUrl;
+    
+    @Column(columnDefinition = "CLOB")
+    private String bio;
+    
+    private String instagramUrl;
+    private String twitterUrl;
+    private String youtubeUrl;
+    private String spotifyUrl;
+    private String websiteUrl;
 }
 
 // ######################################## Person2 CODE END ##########################################

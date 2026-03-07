@@ -33,6 +33,9 @@ import java.util.List;
 
 // ####################################### Person2 CODE START #########################################
 public class SearchResultDto {
-
+    private List<Song> songs;
+    private List<User> artists;
+    private List<Album> albums;
+    private List<Playlist> playlists;
 }
 // ######################################## Person2 CODE END ##########################################

@@ -1,13 +1,29 @@
-/**
- * This controller specializes in managing the visual experience for music
- * albums.
- * It provides users with a deep dive into an artist's curated collection of
- * tracks,
- * showing both the album's high-level metadata (like cover art and title) and
- * its full track list.
- * By mapping requests under "/album", it organizes the application's view logic
- * around
- * standard musical release structures. It acts as an essential bridge for users
- * transitioning
- * from discovering a single song to exploring a complete musical project.
- */
+package com.revature.revplay.controller;
+
+import com.revature.revplay.entity.Album;
+import com.revature.revplay.repository.AlbumRepository;
+import com.revature.revplay.repository.SongRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Controller;
+import org.springframework.ui.Model;
+import org.springframework.web.bind.annotation.*;
+
+@Controller
+@RequestMapping("/album")
+@RequiredArgsConstructor
+public class AlbumViewController {
+    
+    private final AlbumRepository albumRepository;
+    private final SongRepository songRepository;
+    
+    @GetMapping("/{id}")
+    public String viewAlbumDetail(@PathVariable Long id, Model model) {
+        Album album = albumRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Album not found"));
+        
+        model.addAttribute("album", album);
+        model.addAttribute("songs", songRepository.findByAlbumId(id));
+        
+        return "album/detail";
+    }
+}

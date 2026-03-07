@@ -34,6 +34,52 @@ import java.util.stream.Collectors;
 @Controller
 @RequestMapping("/search")
 public class SearchController {
+
+    private final SearchService searchService;
+    private final AlbumRepository albumRepository;
+    private final UserRepository userRepository;
+
+    public SearchController(SearchService searchService, AlbumRepository albumRepository, UserRepository userRepository) {
+        this.searchService = searchService;
+        this.albumRepository = albumRepository;
+        this.userRepository = userRepository;
+    }
+
+    @GetMapping
+    public String search(@RequestParam String q, Model model) {
+        SearchResultDto results = searchService.searchAll(q);
+        model.addAttribute("query", q);
+        model.addAttribute("results", results);
+        return "search/results";
+    }
+
+    @GetMapping("/filter")
+    public String filter(@RequestParam(required = false) String title,
+                        @RequestParam(required = false) String genre,
+                        @RequestParam(required = false) Long artistId,
+                        @RequestParam(required = false) Long albumId,
+                        @RequestParam(required = false) Integer releaseYear,
+                        Model model) {
+        List<Song> songs = searchService.filterSongs(title, genre, artistId, albumId, releaseYear);
+        model.addAttribute("songs", songs);
+        model.addAttribute("genres", searchService.getAllGenres());
+        model.addAttribute("artists", userRepository.findAllArtists());
+        model.addAttribute("albums", albumRepository.findAll());
+        model.addAttribute("selectedTitle", title);
+        model.addAttribute("selectedGenre", genre);
+        model.addAttribute("selectedArtistId", artistId);
+        model.addAttribute("selectedAlbumId", albumId);
+        model.addAttribute("selectedReleaseYear", releaseYear);
+        return "search/filter";
+    }
+
+    @GetMapping("/categories")
+    public String categories(Model model) {
+        model.addAttribute("genres", searchService.getAllGenres());
+        model.addAttribute("artists", userRepository.findAllArtists());
+        model.addAttribute("albums", albumRepository.findAllByOrderByReleaseDateDesc());
+        return "search/categories";
+    }
 }
 
 // ######################################## Person2 CODE END ##########################################
