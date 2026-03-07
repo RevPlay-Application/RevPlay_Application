@@ -23,32 +23,103 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class SearchResultDto {
-    /**
-     * Lists containing individual entities that matched the user's search query
-     * across different categories.
-     */
-    private List<Song> songs;
-    private List<User> artists;
-    private List<Album> albums;
-    private List<Playlist> playlists;
+public class ArtistProfile {
 
     /**
-     * A utility method to quickly determine if the search returned zero results
-     * across all categories.
-     *
-     * This method is essential for:
-     * 1. Displaying a "No Results Found" message to the user when appropriate.
-     * 2. determining if specialized UI sections (like artist results) should be
-     * hidden.
-     * 3. helping the controller decide whether to show browsing categories instead
-     * of results.
-     * 4. Simplifying result checking logic in the view layer (Thymeleaf).
+     * The primary key for the profile, which is mapped directly from the User's ID.
+     * This shared identifier pattern (MapsId) ensures 1:1 integrity between
+     * the account and the professional profile.
      */
-    public boolean isEmpty() {
-        return (songs == null || songs.isEmpty()) &&
-                (artists == null || artists.isEmpty()) &&
-                (albums == null || albums.isEmpty()) &&
-                (playlists == null || playlists.isEmpty());
+    @Id
+    private Long id;
+
+    /**
+     * The underlying User account that owns this professional profile project.
+     */
+    @OneToOne
+    @MapsId
+    @JoinColumn(name = "user_id")
+    @ToString.Exclude
+    @EqualsAndHashCode.Exclude
+    private User user;
+
+    /**
+     * The professional stage name or brand used by the artist for public
+     * recognition.
+     */
+    @Column(name = "artist_name")
+    private String artistName;
+
+    /**
+     * A deep, multi-paragraph field for the artist to share their musical journey
+     * and vision.
+     */
+    @Column(length = 2000)
+    private String bio;
+
+    /**
+     * The primary musical style or movement the artist identifies with for
+     * cataloging.
+     */
+    private String genre;
+
+    /**
+     * Binary storage for a professional-grade profile picture or artist logo
+     * (BLOB).
+     * This allows creators to have distinct branding separate from their personal
+     * listener avatar.
+     */
+    @Lob
+    @Column(name = "profile_picture_data", columnDefinition = "BLOB")
+    private byte[] profilePictureData;
+
+    @Column(name = "profile_picture_content_type")
+    private String profilePictureContentType;
+
+    /**
+     * Binary storage for the large horizontal banner image displayed at the top of
+     * profiles.
+     * This is a key visual element for the "Artist Dashboard" and public creator
+     * pages.
+     */
+    @Lob
+    @Column(name = "banner_image_data", columnDefinition = "BLOB")
+    private byte[] bannerImageData;
+
+    @Column(name = "banner_image_content_type")
+    private String bannerImageContentType;
+
+    /**
+     * Generates a virtual web URL for fetching the professional artist thumbnail.
+     */
+    public String getProfilePictureUrl() {
+        return (this.profilePictureData != null) ? "/api/media/artist/" + this.id + "/picture" : null;
     }
+
+    /**
+     * Generates a virtual web URL for fetching the wide banner graphic.
+     */
+    public String getBannerImageUrl() {
+        return (this.bannerImageData != null) ? "/api/media/artist/" + this.id + "/banner" : null;
+    }
+
+    /**
+     * External engagement links used to build an artist's cross-platform presence.
+     * These fields allow creators to funnel RevPlay listeners to their other social
+     * hubs.
+     */
+    @Column(name = "instagram_url")
+    private String instagramUrl;
+
+    @Column(name = "twitter_url")
+    private String twitterUrl;
+
+    @Column(name = "youtube_url")
+    private String youtubeUrl;
+
+    @Column(name = "spotify_url")
+    private String spotifyUrl;
+
+    @Column(name = "website_url")
+    private String websiteUrl;
 }

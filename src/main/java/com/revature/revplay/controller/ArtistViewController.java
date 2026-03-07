@@ -1,3 +1,5 @@
+package com.revature.revplay.controller;
+
 import com.revature.revplay.entity.Album;
 import com.revature.revplay.entity.ArtistProfile;
 import com.revature.revplay.entity.Song;
