@@ -3,8 +3,6 @@ package com.revature.revplay.entity;
 import jakarta.persistence.*;
 import lombok.*;
 
-import java.util.List;
-
 /**
  * This JPA entity extends the base User record for members with the 'ARTIST'
  * role.
@@ -23,6 +21,9 @@ import java.util.List;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+
+// ######################################## Person1 CODE END ##########################################
+// ####################################### Person2 CODE START #########################################
 public class ArtistProfile {
 
     /**
