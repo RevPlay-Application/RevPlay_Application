@@ -41,7 +41,7 @@ public class ArtistViewController {
 
     /**
      * Standard constructor used to initialize the artist discovery system.
-     *
+     * 
      * The dependencies provided here allow the controller to:
      * 1. Validate 'ARTIST' roles and fetch core user accounts.
      * 2. Access detailed artist-only bio and banner information.
@@ -51,8 +51,8 @@ public class ArtistViewController {
      * interactive.
      */
     public ArtistViewController(UserRepository userRepository, ArtistProfileRepository artistProfileRepository,
-                                SongRepository songRepository, AlbumRepository albumRepository,
-                                com.revature.revplay.service.SocialService socialService) {
+            SongRepository songRepository, AlbumRepository albumRepository,
+            com.revature.revplay.service.SocialService socialService) {
         this.userRepository = userRepository;
         this.artistProfileRepository = artistProfileRepository;
         this.songRepository = songRepository;
@@ -63,7 +63,7 @@ public class ArtistViewController {
     /**
      * Renders the complete public profile for a musician based on their custom
      * username.
-     *
+     * 
      * The profile assembly process involves:
      * 1. Verifying that the requested user exists and strictly holds the 'ARTIST'
      * role.
@@ -79,7 +79,7 @@ public class ArtistViewController {
      */
     @GetMapping("/{username}")
     public String viewArtistPublicProfile(@PathVariable("username") String username,
-                                          org.springframework.security.core.Authentication authentication, Model model) {
+            org.springframework.security.core.Authentication authentication, Model model) {
         User artist = userRepository.findByUsername(username)
                 .filter(u -> u.getRole().name().equals("ARTIST"))
                 .orElseThrow(() -> new ResourceNotFoundException("Artist not found: " + username));

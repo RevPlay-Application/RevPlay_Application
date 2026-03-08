@@ -72,9 +72,6 @@ public class MediaController {
      * 6. This method allows the music player to play songs even if they aren't
      * stored as files.
      */
-    
-
-
     @GetMapping("/song/{id}/audio")
     public ResponseEntity<Resource> getSongAudio(@PathVariable("id") Long id) {
         Song song = songRepository.findById(id).orElse(null);
@@ -86,8 +83,7 @@ public class MediaController {
                         song.getAudioContentType() != null ? song.getAudioContentType() : "audio/mpeg")
                 .body(new ByteArrayResource(song.getAudioData()));
     }
-
-/**
+    /**
      * Fetches and returns the cover art image for a specific song.
      * 
      * This method ensures the UI looks beautiful by:
@@ -98,8 +94,7 @@ public class MediaController {
      * 4. Keeping song-specific art separate from general album-wide art.
      * 5. Ensuring that every song in the playlist has its own visual identity.
      */
-
-@GetMapping("/song/{id}/cover")
+    @GetMapping("/song/{id}/cover")
     public ResponseEntity<byte[]> getSongCover(@PathVariable("id") Long id) {
         Song song = songRepository.findById(id).orElse(null);
         if (song == null || song.getCoverArtData() == null) {
@@ -134,7 +129,6 @@ public class MediaController {
                         album.getCoverArtContentType() != null ? album.getCoverArtContentType() : "image/jpeg")
                 .body(album.getCoverArtData());
     }
-
 /**
      * Delivers the personal profile picture for a registered RevPlay user.
      * 
@@ -159,9 +153,8 @@ public class MediaController {
                                 : "image/jpeg")
                 .body(user.getProfilePictureData());
     }
-    /**
-     * Retrieves the large background banner for an artist's profile page.
-     *
+/**
+     * Retrieves the large background banner for an artist's profile page. 
      * Banners are high-impact visual elements handled through:
      * 1. Searching the ArtistProfile records for the matching artist ID.
      * 2. Pulling the high-resolution banner image data stored in the database.
