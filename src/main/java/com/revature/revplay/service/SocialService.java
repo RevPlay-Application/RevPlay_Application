@@ -32,20 +32,9 @@ public interface SocialService {
      * buttons.
      */
 
-    boolean toggleFollowArtist(Long artistId, String username);
+// ####################################### Person2 CODE START #########################################
 
-    /**
-     * Checks the real-time social connection status between two accounts.
-     *
-     * The relationship check handles:
-     * 1. Querying the join table to see if the listener currently follows the
-     * artist.
-     * 2. returning a boolean flag that determines the state of the "Follow" button.
-     * 3. This is essential for personalizing the artist's public profile page.
-     * 4. It ensures users have immediate visual feedback on their social status.
-     */
-    boolean isFollowing(Long artistId, String username);
-
+// ######################################## Person2 CODE END ##########################################
 /**
      * Aggregates the total audience size for a specific music creator.
      * 
