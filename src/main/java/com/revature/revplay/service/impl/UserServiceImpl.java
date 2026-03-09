@@ -8,6 +8,7 @@ import com.revature.revplay.repository.ArtistProfileRepository;
 import com.revature.revplay.repository.PlaylistRepository;
 import com.revature.revplay.repository.UserRepository;
 import com.revature.revplay.service.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import java.io.IOException;
  * to complex artist dashboard synchronization and password security.
  */
 @Service
+@Log4j2
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
@@ -156,9 +158,11 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updateUserProfile(String username, UserDto userDto, MultipartFile profilePic, MultipartFile bannerPic) {
+        log.info("Updating profile for user: {}", username);
         User user = getUserByUsername(username);
 
         if (userDto.getDisplayName() != null && !userDto.getDisplayName().isEmpty()) {
+            log.debug("Updating display name for {}: {}", username, userDto.getDisplayName());
             user.setDisplayName(userDto.getDisplayName());
         }
 
@@ -172,7 +176,9 @@ public class UserServiceImpl implements UserService {
             try {
                 user.setProfilePictureData(profilePic.getBytes());
                 user.setProfilePictureContentType(profilePic.getContentType());
+                log.info("Profile picture updated for user: {}", username);
             } catch (IOException e) {
+                log.error("Failed to byte-read profile picture for user {}", username, e);
                 throw new RuntimeException("Failed to store profile picture in database", e);
             }
         }
@@ -180,6 +186,7 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         if (user.getRole() == Role.ARTIST) {
+            log.info("Syncing artist profile updates for user: {}", username);
             ArtistProfile profile = artistProfileRepository.findById(user.getId())
                     .orElse(new ArtistProfile());
             profile.setUser(user);
@@ -214,11 +221,14 @@ public class UserServiceImpl implements UserService {
                     // Also update profile pic in artist profile if needed, though they usually sync
                     profile.setProfilePictureData(user.getProfilePictureData());
                     profile.setProfilePictureContentType(user.getProfilePictureContentType());
+                    log.info("Artist banner graphic updated for user: {}", username);
                 } catch (IOException e) {
+                    log.error("Failed to byte-read banner context for user {}", username, e);
                     throw new RuntimeException("Failed to store banner in database", e);
                 }
             }
             artistProfileRepository.save(profile);
+            log.debug("Artist profile persisted for {}", username);
         }
     }
 
@@ -252,8 +262,10 @@ public class UserServiceImpl implements UserService {
     @Override
     @Transactional
     public void updatePassword(String username, String newPassword) {
+        log.info("Updating password for user: {}", username);
         User user = getUserByUsername(username);
         user.setPassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
+        log.info("Password successfully updated and hashed for user: {}", username);
     }
 }

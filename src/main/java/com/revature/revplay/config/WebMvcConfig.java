@@ -1,5 +1,6 @@
 package com.revature.revplay.config;
 
+import lombok.extern.log4j.Log4j2;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -23,6 +24,7 @@ import java.nio.file.Paths;
  * explicitly tell the server how to find and serve them.
  */
 @Configuration
+@Log4j2
 public class WebMvcConfig implements WebMvcConfigurer {
 
     /**
@@ -60,6 +62,7 @@ public class WebMvcConfig implements WebMvcConfigurer {
 
         // Line below: Register the web URL pattern '/uploads/**' to map directly to the
         // physical files
+        log.info("Configuring resource mapping for uploads: /uploads/** -> file:/{}", uploadPath);
         registry.addResourceHandler("/uploads/**")
                 .addResourceLocations("file:/" + uploadPath);
     }

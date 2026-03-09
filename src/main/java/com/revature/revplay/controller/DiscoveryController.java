@@ -6,6 +6,7 @@ import com.revature.revplay.repository.UserRepository;
 import com.revature.revplay.service.PlaylistService;
 import com.revature.revplay.service.SearchService;
 import com.revature.revplay.service.SongService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -26,6 +27,7 @@ import org.springframework.web.bind.annotation.PathVariable;
  * interaction on the platform.
  */
 @Controller
+@Log4j2
 public class DiscoveryController {
 
     private final SongService songService;
@@ -72,8 +74,9 @@ public class DiscoveryController {
      * 5. Returning the "discovery/list" view, which is the "front door" of the
      * RevPlay experience.
      */
-@GetMapping("/")
+    @GetMapping("/")
     public String home(Model model) {
+        log.info("Loading home page (Discovery)");
         model.addAttribute("songs", songService.getAllSongs());
         model.addAttribute("albums", albumRepository.findAll());
         model.addAttribute("artists", userRepository.findAllArtists());
@@ -81,7 +84,8 @@ public class DiscoveryController {
         model.addAttribute("publicPlaylists", playlistService.getAllPublicPlaylists());
         return "discovery/list";
     }
-/**
+
+    /**
      * Manages a specialized 'Explore' view focused strictly on public user
      * playlists.
      * 
@@ -97,10 +101,11 @@ public class DiscoveryController {
      * 5. It encourages users to see what their peers are listening to and follow
      * new tastes.
      */
-@GetMapping("/discovery")
+    @GetMapping("/discovery")
     public String discovery(
             @org.springframework.web.bind.annotation.RequestParam(name = "q", required = false) String query,
             Model model) {
+        log.info("Accessing discovery view with query: {}", query);
         java.util.List<com.revature.revplay.entity.Playlist> playlists = playlistService.getAllPublicPlaylists();
 
         if (query != null && !query.trim().isEmpty()) {
@@ -115,7 +120,8 @@ public class DiscoveryController {
         model.addAttribute("publicPlaylists", playlists);
         return "discovery/explore-playlists";
     }
-/**
+
+    /**
      * Provides a focused view for an individual song, including metadata and
      * library options.
      * 
@@ -131,11 +137,14 @@ public class DiscoveryController {
      * 5. Ensuring that both the music player and the text descriptions are
      * synchronized for the user.
      */
-@GetMapping("/song/{id}")
+    @GetMapping("/song/{id}")
     public String viewSongDetails(@PathVariable("id") Long id, Model model, Authentication authentication) {
+        log.debug("Fetching song details for ID: {}", id);
         Song song = songService.getSongById(id);
         model.addAttribute("song", song);
         if (authentication != null && authentication.isAuthenticated()) {
+            log.debug("Authenticated user {} is viewing details for song: {}", authentication.getName(),
+                    song.getTitle());
             model.addAttribute("userPlaylists", playlistService.getUserPlaylists(authentication.getName()));
         }
         return "discovery/detail";

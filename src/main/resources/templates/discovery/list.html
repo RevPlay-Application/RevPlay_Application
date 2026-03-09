@@ -547,9 +547,9 @@
             const modal = new bootstrap.Modal(document.getElementById('albumDetailsModal'));
             modal.show();
         }
-        let currentArtistId = null;
+        window.currentArtistId = null;
 
-        function showArtistDetails(element) {
+        window.showArtistDetails = function (element) {
             const name = element.getAttribute('data-name');
             const id = element.getAttribute('data-id');
             const bio = element.getAttribute('data-bio');
@@ -564,7 +564,7 @@
             const spotify = element.getAttribute('data-spotify');
             const website = element.getAttribute('data-website');
 
-            currentArtistId = id;
+            window.currentArtistId = id;
             document.getElementById('modalArtistName').innerText = name;
             document.getElementById('modalArtistPfp').src = pfp;
             document.getElementById('modalArtistBanner').src = banner || "/images/default-banner.svg";
@@ -655,9 +655,9 @@
             new bootstrap.Modal(document.getElementById('artistDetailsModal')).show();
         }
 
-        function toggleFollowArtist() {
-            if (!currentArtistId) return;
-            fetch(`/social/follow/${currentArtistId}`, { method: 'POST' })
+        window.toggleFollowArtist = function () {
+            if (!window.currentArtistId) return;
+            fetch(`/social/follow/${window.currentArtistId}`, { method: 'POST' })
                 .then(res => {
                     if (!res.ok) throw new Error("Server error");
                     return res.json();

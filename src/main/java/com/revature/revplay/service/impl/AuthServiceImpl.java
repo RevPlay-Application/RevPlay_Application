@@ -7,11 +7,13 @@ import com.revature.revplay.entity.User;
 import com.revature.revplay.repository.ArtistProfileRepository;
 import com.revature.revplay.repository.UserRepository;
 import com.revature.revplay.service.AuthService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 @Service
+@Log4j2
 public class AuthServiceImpl implements AuthService {
 
     private final UserRepository userRepository;
@@ -28,10 +30,13 @@ public class AuthServiceImpl implements AuthService {
     @Override
     @Transactional
     public User registerUser(UserRegistrationDto registrationDto) {
+        log.info("Registering new user: {} (isArtist: {})", registrationDto.getUsername(), registrationDto.isArtist());
         if (userRepository.existsByUsername(registrationDto.getUsername())) {
+            log.warn("Registration failed: Username {} already exists", registrationDto.getUsername());
             throw new RuntimeException("Username already exists");
         }
         if (userRepository.existsByEmail(registrationDto.getEmail())) {
+            log.warn("Registration failed: Email {} already exists", registrationDto.getEmail());
             throw new RuntimeException("Email already exists");
         }
 
@@ -43,12 +48,14 @@ public class AuthServiceImpl implements AuthService {
         user.setDisplayName(registrationDto.getUsername());
 
         User savedUser = userRepository.save(user);
+        log.info("User {} successfully saved with ID: {}", savedUser.getUsername(), savedUser.getId());
 
         if (registrationDto.isArtist()) {
             ArtistProfile profile = new ArtistProfile();
             profile.setUser(savedUser);
             profile.setArtistName(savedUser.getUsername());
             artistProfileRepository.save(profile);
+            log.info("Artist profile created for user {}", savedUser.getUsername());
         }
 
         return savedUser;

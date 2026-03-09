@@ -9,6 +9,7 @@ import com.revature.revplay.repository.PlaylistRepository;
 import com.revature.revplay.repository.SongRepository;
 import com.revature.revplay.repository.UserRepository;
 import com.revature.revplay.service.SearchService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -27,6 +28,7 @@ import java.util.stream.Collectors;
  * interface.
  */
 @Service
+@Log4j2
 public class SearchServiceImpl implements SearchService {
 
     private final SongRepository songRepository;
@@ -69,14 +71,20 @@ public class SearchServiceImpl implements SearchService {
      */
     @Override
     public SearchResultDto searchAll(String keyword) {
+        log.info("Executing global search for keyword: '{}'", keyword);
         SearchResultDto results = new SearchResultDto();
 
         if (keyword != null && !keyword.trim().isEmpty()) {
-            results.setSongs(songRepository.findByTitleContainingIgnoreCase(keyword.trim()));
+            String trimmed = keyword.trim();
+            results.setSongs(songRepository.findByTitleContainingIgnoreCase(trimmed));
             results.setArtists(
-                    userRepository.findByDisplayNameContainingIgnoreCaseAndRole(keyword.trim(), Role.ARTIST));
-            results.setAlbums(albumRepository.findByNameContainingIgnoreCase(keyword.trim()));
-            results.setPlaylists(playlistRepository.findByNameContainingIgnoreCaseAndIsPublicTrue(keyword.trim()));
+                    userRepository.findByDisplayNameContainingIgnoreCaseAndRole(trimmed, Role.ARTIST));
+            results.setAlbums(albumRepository.findByNameContainingIgnoreCase(trimmed));
+            results.setPlaylists(playlistRepository.findByNameContainingIgnoreCaseAndIsPublicTrue(trimmed));
+
+            log.debug("Global search results summary - Songs: {}, Artists: {}, Albums: {}, Playlists: {}",
+                    results.getSongs().size(), results.getArtists().size(),
+                    results.getAlbums().size(), results.getPlaylists().size());
         }
 
         return results;
@@ -97,6 +105,8 @@ public class SearchServiceImpl implements SearchService {
      */
     @Override
     public List<Song> filterSongs(String title, String genre, Long artistId, Long albumId, Integer releaseYear) {
+        log.info("Applying song filters - Title: {}, Genre: {}, ArtistID: {}, AlbumID: {}, Year: {}",
+                title, genre, artistId, albumId, releaseYear);
         User artist = null;
         if (artistId != null) {
             artist = userRepository.findById(artistId).orElse(null);
@@ -105,7 +115,10 @@ public class SearchServiceImpl implements SearchService {
         String formattedTitle = (title != null && !title.isEmpty()) ? title : null;
         String formattedGenre = (genre != null && !genre.isEmpty()) ? genre : null;
 
-        return songRepository.searchAndFilterSongs(formattedTitle, formattedGenre, artist, albumId, releaseYear);
+        List<Song> results = songRepository.searchAndFilterSongs(formattedTitle, formattedGenre, artist, albumId,
+                releaseYear);
+        log.debug("Found {} songs matching filtered criteria", results.size());
+        return results;
     }
 
     /**

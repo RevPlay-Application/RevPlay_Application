@@ -8,6 +8,7 @@ import com.revature.revplay.entity.User;
 import com.revature.revplay.repository.AlbumRepository;
 import com.revature.revplay.service.SongService;
 import com.revature.revplay.service.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
@@ -32,6 +33,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/artist/dashboard")
+@Log4j2
 public class ArtistDashboardController {
 
     private final SongService songService;
@@ -84,6 +86,7 @@ public class ArtistDashboardController {
      */
     @GetMapping
     public String renderDashboard(Authentication authentication, Model model) {
+        log.info("Rendering artist dashboard for user: {}", authentication.getName());
         User artist = userService.getUserByUsername(authentication.getName());
         List<Song> songs = songService.getSongsByArtistId(artist.getId());
 
@@ -150,9 +153,11 @@ public class ArtistDashboardController {
             @RequestParam(value = "coverFile", required = false) MultipartFile coverFile,
             RedirectAttributes redirectAttributes) {
 
+        log.info("Processing song upload: '{}' by artist: {}", songDto.getTitle(), authentication.getName());
         User artist = userService.getUserByUsername(authentication.getName());
         songService.saveSong(songDto, artist, audioFile, coverFile);
 
+        log.info("Song '{}' successfully uploaded by {}", songDto.getTitle(), authentication.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Song uploaded successfully.");
         return "redirect:/artist/dashboard";
     }
@@ -212,9 +217,11 @@ public class ArtistDashboardController {
             @RequestParam(value = "coverFile", required = false) MultipartFile coverFile,
             RedirectAttributes redirectAttributes) {
 
+        log.info("Updating song ID: {} for artist: {}", id, authentication.getName());
         User artist = userService.getUserByUsername(authentication.getName());
         songService.updateSong(id, songDto, artist.getId(), coverFile);
 
+        log.info("Song ID: {} successfully updated by {}", id, authentication.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Song updated successfully.");
         return "redirect:/artist/dashboard";
     }
@@ -233,9 +240,11 @@ public class ArtistDashboardController {
     @PostMapping("/songs/{id}/delete")
     public String deleteSong(@PathVariable("id") Long id, Authentication authentication,
             RedirectAttributes redirectAttributes) {
+        log.info("Artist {} is deleting song ID: {}", authentication.getName(), id);
         User artist = userService.getUserByUsername(authentication.getName());
         songService.deleteSong(id, artist.getId());
 
+        log.info("Song ID: {} successfully deleted by {}", id, authentication.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Song deleted completely.");
         return "redirect:/artist/dashboard";
     }
@@ -278,6 +287,7 @@ public class ArtistDashboardController {
             @RequestParam(value = "coverFile", required = false) MultipartFile coverFile,
             RedirectAttributes redirectAttributes) {
 
+        log.info("Artist {} is creating album: '{}'", authentication.getName(), albumDto.getName());
         User artist = userService.getUserByUsername(authentication.getName());
 
         Album album = Album.builder()
@@ -292,11 +302,13 @@ public class ArtistDashboardController {
                 album.setCoverArtData(coverFile.getBytes());
                 album.setCoverArtContentType(coverFile.getContentType());
             } catch (java.io.IOException e) {
+                log.error("Failed to byte-read album cover for project: {}", albumDto.getName(), e);
                 throw new RuntimeException("Failed to store album cover in database", e);
             }
         }
 
-        albumRepository.save(album);
+        Album saved = albumRepository.save(album);
+        log.info("Album '{}' created with ID: {}", saved.getName(), saved.getId());
 
         redirectAttributes.addFlashAttribute("successMessage", "Album created successfully.");
         return "redirect:/artist/dashboard";
@@ -356,11 +368,13 @@ public class ArtistDashboardController {
             @RequestParam(value = "coverFile", required = false) MultipartFile coverFile,
             RedirectAttributes redirectAttributes) {
 
+        log.info("Updating album ID: {} for artist: {}", id, authentication.getName());
         User artist = userService.getUserByUsername(authentication.getName());
         Album album = albumRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Album not found"));
 
         if (!album.getArtist().getId().equals(artist.getId())) {
+            log.warn("Unauthorized modification attempt for album ID: {} by artist: {}", id, authentication.getName());
             return "redirect:/artist/dashboard";
         }
 
@@ -373,11 +387,13 @@ public class ArtistDashboardController {
                 album.setCoverArtData(coverFile.getBytes());
                 album.setCoverArtContentType(coverFile.getContentType());
             } catch (java.io.IOException e) {
+                log.error("Failed to update album cover for project ID {}: ", id, e);
                 throw new RuntimeException("Failed to update album cover", e);
             }
         }
 
         albumRepository.save(album);
+        log.info("Album ID: {} successfully updated by {}", id, authentication.getName());
 
         redirectAttributes.addFlashAttribute("successMessage", "Album updated successfully.");
         return "redirect:/artist/dashboard";
@@ -405,11 +421,13 @@ public class ArtistDashboardController {
     @org.springframework.transaction.annotation.Transactional
     public String deleteAlbum(@PathVariable("id") Long id, Authentication authentication,
             RedirectAttributes redirectAttributes) {
+        log.info("Artist {} is deleting album ID: {}", authentication.getName(), id);
         User artist = userService.getUserByUsername(authentication.getName());
         Album album = albumRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Album not found"));
 
         if (!album.getArtist().getId().equals(artist.getId())) {
+            log.warn("Unauthorized delete attempt for album ID: {} by artist: {}", id, authentication.getName());
             return "redirect:/artist/dashboard";
         }
 
@@ -425,6 +443,7 @@ public class ArtistDashboardController {
                         .setParameter("songId", song.getId()).executeUpdate();
                 song.setAlbumId(null);
                 songService.saveSong(song);
+                log.debug("Orphaned song ID: {} from deleted album project", song.getId());
             }
         }
 
@@ -433,6 +452,7 @@ public class ArtistDashboardController {
         entityManager.createNativeQuery("DELETE FROM albums WHERE id = :id")
                 .setParameter("id", id).executeUpdate();
 
+        log.info("Album ID: {} successfully purged from system by {}", id, authentication.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Album deleted successfully.");
         return "redirect:/artist/dashboard";
     }

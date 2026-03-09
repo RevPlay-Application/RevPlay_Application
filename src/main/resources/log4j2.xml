@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Configuration status="WARN">
     <Properties>
-        <Property name="LOG_PATTERN">%d{yyyy-MM-dd HH:mm:ss.SSS} %5p --- [%15.15t] %-40.40c{1.} : %m%n%ex</Property>
+        <!-- Added color coding for 'premium' console visibility: Highlighted Levels for easy debugging -->
+        <Property name="LOG_PATTERN">%clr{%d{yyyy-MM-dd HH:mm:ss.SSS}}{faint} %clr{%5p} %clr{---}{faint} %clr{[%15.15t]}{faint} %clr{%-40.40c{1.}}{cyan} %clr{:}{faint} %m%n%ex</Property>
     </Properties>
     <Appenders>
         <Console name="Console" target="SYSTEM_OUT">

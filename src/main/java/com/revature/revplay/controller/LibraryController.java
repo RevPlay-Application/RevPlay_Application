@@ -4,6 +4,7 @@ import com.revature.revplay.dto.PlaylistDto;
 import com.revature.revplay.entity.Playlist;
 import com.revature.revplay.entity.Song;
 import com.revature.revplay.service.PlaylistService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -27,6 +28,7 @@ import java.util.Set;
  */
 @Controller
 @RequestMapping("/library")
+@Log4j2
 public class LibraryController {
 
     private final PlaylistService playlistService;
@@ -63,6 +65,7 @@ public class LibraryController {
      */
     @GetMapping("/liked")
     public String viewLikedSongs(Authentication authentication, Model model) {
+        log.info("User {} is viewing their liked songs", authentication.getName());
         Set<Song> likedSongs = playlistService.getLikedSongs(authentication.getName());
         model.addAttribute("songs", likedSongs);
         return "library/liked";
@@ -89,8 +92,10 @@ public class LibraryController {
                 .getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()
                 || auth instanceof org.springframework.security.authentication.AnonymousAuthenticationToken) {
+            log.warn("Unauthorized attempt to like song ID: {}", songId);
             return ResponseEntity.status(401).build();
         }
+        log.info("User {} is toggling like for song ID: {}", auth.getName(), songId);
         boolean isNowLiked = playlistService.toggleLikeSong(songId, auth.getName());
         return ResponseEntity.ok(isNowLiked);
     }
@@ -109,6 +114,7 @@ public class LibraryController {
     @GetMapping("/like/status/{songId}")
     @ResponseBody
     public ResponseEntity<Boolean> getLikeStatus(@PathVariable("songId") Long songId) {
+        log.debug("Checking like status for song ID: {}", songId);
         org.springframework.security.core.Authentication auth = org.springframework.security.core.context.SecurityContextHolder
                 .getContext().getAuthentication();
         if (auth == null || !auth.isAuthenticated()
@@ -134,6 +140,8 @@ public class LibraryController {
     @ResponseBody
     public ResponseEntity<java.util.List<java.util.Map<String, Object>>> getPlaylistsJson(
             Authentication authentication) {
+        log.debug("Fetching playlists JSON for user: {}",
+                authentication != null ? authentication.getName() : "anonymous");
         if (authentication == null)
             return ResponseEntity.status(401).build();
         java.util.List<Playlist> playlists = playlistService.getUserPlaylists(authentication.getName());
@@ -160,6 +168,7 @@ public class LibraryController {
      */
     @GetMapping("/playlists")
     public String viewPlaylists(Authentication authentication, Model model) {
+        log.info("User {} is viewing their playlists dashboard", authentication.getName());
         model.addAttribute("playlists", playlistService.getUserPlaylists(authentication.getName()));
         model.addAttribute("playlistDto", new PlaylistDto());
         return "library/playlists";
@@ -180,6 +189,7 @@ public class LibraryController {
     public String createPlaylist(@ModelAttribute("playlistDto") PlaylistDto playlistDto,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
+        log.info("User {} is creating playlist: '{}'", authentication.getName(), playlistDto.getName());
         playlistService.createPlaylist(playlistDto, authentication.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Playlist created successfully.");
         return "redirect:/library/playlists";
@@ -197,6 +207,7 @@ public class LibraryController {
      */
     @GetMapping("/playlists/{id}")
     public String viewPlaylistDetails(@PathVariable("id") Long id, Model model) {
+        log.info("Viewing playlist details for ID: {}", id);
         Playlist playlist = playlistService.getPlaylistById(id);
         model.addAttribute("playlist", playlist);
         return "library/playlist-detail";
@@ -217,6 +228,7 @@ public class LibraryController {
     @PostMapping("/playlists/{id}/delete")
     public String deletePlaylist(@PathVariable("id") Long id, Authentication authentication,
             RedirectAttributes redirectAttributes) {
+        log.info("User {} is deleting playlist ID: {}", authentication.getName(), id);
         playlistService.deletePlaylist(id, authentication.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Playlist deleted.");
         return "redirect:/library/playlists";
@@ -238,6 +250,7 @@ public class LibraryController {
     public ResponseEntity<String> addSongToPlaylist(@PathVariable("playlistId") Long playlistId,
             @PathVariable("songId") Long songId,
             Authentication authentication) {
+        log.info("Request to add song ID: {} to playlist ID: {}", songId, playlistId);
         if (authentication == null || !authentication.isAuthenticated()) {
             return ResponseEntity.status(401).body("Authentication required");
         }
@@ -260,6 +273,7 @@ public class LibraryController {
             @PathVariable("songId") Long songId,
             Authentication authentication,
             RedirectAttributes redirectAttributes) {
+        log.info("User {} is removing song ID: {} from playlist ID: {}", authentication.getName(), songId, playlistId);
         playlistService.removeSongFromPlaylist(playlistId, songId, authentication.getName());
         redirectAttributes.addFlashAttribute("successMessage", "Song removed from playlist.");
         return "redirect:/library/playlists/" + playlistId;
