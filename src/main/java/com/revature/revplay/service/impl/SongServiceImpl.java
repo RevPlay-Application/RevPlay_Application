@@ -9,6 +9,7 @@ import com.revature.revplay.repository.SongRepository;
 import com.revature.revplay.repository.UserRepository;
 import com.revature.revplay.service.SongService;
 import jakarta.persistence.EntityManager;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -29,6 +30,7 @@ import java.util.List;
  * popularity statistics to provide a high-performance streaming experience.
  */
 @Service
+@Log4j2
 public class SongServiceImpl implements SongService {
 
     private final SongRepository songRepository;
@@ -124,7 +126,9 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional
     public Song saveSong(SongDto songDto, User artist, MultipartFile audioFile, MultipartFile coverFile) {
+        log.info("Starting song upload: {} for artist ID: {}", songDto.getTitle(), artist.getId());
         if (audioFile == null || audioFile.isEmpty()) {
+            log.error("Upload failed: Audio file is missing for song {}", songDto.getTitle());
             throw new IllegalArgumentException("Audio file is explicitly required.");
         }
 
@@ -142,10 +146,14 @@ public class SongServiceImpl implements SongService {
             if (coverFile != null && !coverFile.isEmpty()) {
                 song.setCoverArtData(coverFile.getBytes());
                 song.setCoverArtContentType(coverFile.getContentType());
+                log.debug("Attached cover art for song: {}", songDto.getTitle());
             }
 
-            return songRepository.save(song);
+            Song saved = songRepository.save(song);
+            log.info("Song successfully uploaded and saved with ID: {}", saved.getId());
+            return saved;
         } catch (java.io.IOException e) {
+            log.error("IO Exception during song upload: ", e);
             throw new RuntimeException("Failed to store media in database", e);
         }
     }
@@ -168,9 +176,11 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional
     public Song updateSong(Long id, SongDto songDto, Long artistId, MultipartFile coverFile) {
+        log.info("Updating song ID: {} by artist ID: {}", id, artistId);
         Song song = getSongById(id);
 
         if (!song.getArtist().getId().equals(artistId)) {
+            log.warn("Unauthorized modification attempt for song ID: {} by user ID: {}", id, artistId);
             throw new RuntimeException("Unauthorized action.");
         }
 
@@ -185,7 +195,9 @@ public class SongServiceImpl implements SongService {
             try {
                 song.setCoverArtData(coverFile.getBytes());
                 song.setCoverArtContentType(coverFile.getContentType());
+                log.debug("Updated cover art for song ID: {}", id);
             } catch (java.io.IOException e) {
+                log.error("IO Exception during song cover update for song ID {}: ", id, e);
                 throw new RuntimeException("Failed to update cover art in database", e);
             }
         }
@@ -225,26 +237,32 @@ public class SongServiceImpl implements SongService {
     @Override
     @Transactional
     public void deleteSong(Long id, Long artistId) {
+        log.info("Attempting to delete song ID: {} by artist ID: {}", id, artistId);
         Song song = getSongById(id);
 
         if (!song.getArtist().getId().equals(artistId)) {
+            log.warn("Unauthorized delete attempt for song ID: {} by user ID: {}", id, artistId);
             throw new RuntimeException("Unauthorized to delete this asset.");
         }
 
         // Clear all FK references before deleting
         // 1. Remove from history
         historyRepository.deleteBySong(song);
+        log.debug("Cleared history records for song ID: {}", id);
 
         // 2. Remove from liked songs (user_liked_songs join table)
         entityManager.createNativeQuery("DELETE FROM user_liked_songs WHERE song_id = :songId")
                 .setParameter("songId", id).executeUpdate();
+        log.debug("Cleared liked_songs relationship for song ID: {}", id);
 
         // 3. Remove from playlists (playlist_songs join table)
         entityManager.createNativeQuery("DELETE FROM playlist_songs WHERE song_id = :songId")
                 .setParameter("songId", id).executeUpdate();
+        log.debug("Cleared playlist relationships for song ID: {}", id);
 
         entityManager.flush();
         songRepository.delete(song);
+        log.info("Song ID: {} successfully deleted from system.", id);
     }
 
     /**
@@ -269,6 +287,7 @@ public class SongServiceImpl implements SongService {
         if (song != null) {
             song.setPlayCount(song.getPlayCount() + 1);
             songRepository.save(song);
+            log.debug("Play count +1 for song ID: {} (Total: {})", id, song.getPlayCount());
 
             if (username != null && !username.isEmpty()) {
                 User user = userRepository.findByUsername(username).orElse(null);
@@ -278,8 +297,11 @@ public class SongServiceImpl implements SongService {
                             .song(song)
                             .build();
                     historyRepository.save(history);
+                    log.debug("Listening history recorded for user: {} on song ID: {}", username, id);
                 }
             }
+        } else {
+            log.warn("Attempted to record play for non-existent song ID: {}", id);
         }
     }
 }

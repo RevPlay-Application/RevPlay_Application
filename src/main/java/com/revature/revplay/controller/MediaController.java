@@ -8,6 +8,7 @@ import com.revature.revplay.repository.AlbumRepository;
 import com.revature.revplay.repository.ArtistProfileRepository;
 import com.revature.revplay.repository.SongRepository;
 import com.revature.revplay.repository.UserRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -34,6 +35,7 @@ import org.springframework.core.io.Resource;
  */
 @Controller
 @RequestMapping("/api/media")
+@Log4j2
 public class MediaController {
 
     private final SongRepository songRepository;
@@ -73,10 +75,12 @@ public class MediaController {
      * 6. This method allows the music player to play songs even if they aren't
      * stored as files.
      */
-@GetMapping("/song/{id}/audio")
+    @GetMapping("/song/{id}/audio")
     public ResponseEntity<Resource> getSongAudio(@PathVariable("id") Long id) {
+        log.debug("Request for song audio ID: {}", id);
         Song song = songRepository.findById(id).orElse(null);
         if (song == null || song.getAudioData() == null) {
+            log.warn("Song audio not found for ID: {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok()
@@ -84,7 +88,8 @@ public class MediaController {
                         song.getAudioContentType() != null ? song.getAudioContentType() : "audio/mpeg")
                 .body(new ByteArrayResource(song.getAudioData()));
     }
-/**
+
+    /**
      * Fetches and returns the cover art image for a specific song.
      * 
      * This method ensures the UI looks beautiful by:
@@ -95,10 +100,12 @@ public class MediaController {
      * 4. Keeping song-specific art separate from general album-wide art.
      * 5. Ensuring that every song in the playlist has its own visual identity.
      */
-@GetMapping("/song/{id}/cover")
+    @GetMapping("/song/{id}/cover")
     public ResponseEntity<byte[]> getSongCover(@PathVariable("id") Long id) {
+        log.debug("Request for song cover ID: {}", id);
         Song song = songRepository.findById(id).orElse(null);
         if (song == null || song.getCoverArtData() == null) {
+            log.debug("Song cover NOT found for ID: {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok()
@@ -121,6 +128,7 @@ public class MediaController {
      */
     @GetMapping("/album/{id}/cover")
     public ResponseEntity<byte[]> getAlbumCover(@PathVariable("id") Long id) {
+        log.debug("Request for album cover ID: {}", id);
         Album album = albumRepository.findById(id).orElse(null);
         if (album == null || album.getCoverArtData() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
@@ -130,7 +138,8 @@ public class MediaController {
                         album.getCoverArtContentType() != null ? album.getCoverArtContentType() : "image/jpeg")
                 .body(album.getCoverArtData());
     }
-/**
+
+    /**
      * Delivers the personal profile picture for a registered RevPlay user.
      * 
      * User profile image delivery is managed by:
@@ -142,10 +151,12 @@ public class MediaController {
      * feeds.
      * 5. It supports personalized branding for every user on the platform.
      */
-@GetMapping("/user/{id}/picture")
+    @GetMapping("/user/{id}/picture")
     public ResponseEntity<byte[]> getUserPicture(@PathVariable("id") Long id) {
+        log.debug("Request for user profile picture ID: {}", id);
         User user = userRepository.findById(id).orElse(null);
         if (user == null || user.getProfilePictureData() == null) {
+            log.debug("User picture NOT found for ID: {}", id);
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();
         }
         return ResponseEntity.ok()
@@ -154,7 +165,8 @@ public class MediaController {
                                 : "image/jpeg")
                 .body(user.getProfilePictureData());
     }
-/**
+
+    /**
      * Retrieves the large background banner for an artist's profile page.
      * 
      * Banners are high-impact visual elements handled through:
@@ -167,6 +179,7 @@ public class MediaController {
      */
     @GetMapping("/artist/{id}/banner")
     public ResponseEntity<byte[]> getArtistBanner(@PathVariable("id") Long id) {
+        log.debug("Request for artist banner ID: {}", id);
         ArtistProfile profile = artistProfileRepository.findById(id).orElse(null);
         if (profile == null || profile.getBannerImageData() == null) {
             return ResponseEntity.status(HttpStatus.NOT_FOUND).build();

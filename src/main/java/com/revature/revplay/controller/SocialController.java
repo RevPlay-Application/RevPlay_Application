@@ -1,6 +1,7 @@
 package com.revature.revplay.controller;
 
 import com.revature.revplay.service.SocialService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Controller;
@@ -22,6 +23,7 @@ import org.springframework.web.bind.annotation.*;
  */
 @Controller
 @RequestMapping("/social")
+@Log4j2
 public class SocialController {
 
     private final SocialService socialService;
@@ -48,8 +50,6 @@ public class SocialController {
         this.historyRepository = historyRepository;
         this.userRepository = userRepository;
     }
-
-    private static final org.slf4j.Logger log = org.slf4j.LoggerFactory.getLogger(SocialController.class);
 
     /**
      * Toggles the "Follow" relationship between the current user and a target
@@ -133,6 +133,7 @@ public class SocialController {
      */
     @GetMapping("/trending")
     public String viewTrending(Model model) {
+        log.info("Request for trending content page");
         model.addAttribute("topSongs", socialService.getTopTrendingSongs(20));
         model.addAttribute("topArtists", socialService.getTopArtists(10));
         return "discovery/trending";
@@ -155,6 +156,8 @@ public class SocialController {
      */
     @GetMapping("/history")
     public String viewHistory(Authentication authentication, Model model) {
+        log.info("Request for listening history by user: {}",
+                authentication != null ? authentication.getName() : "anonymous");
         if (authentication == null)
             return "redirect:/login";
 
@@ -191,6 +194,8 @@ public class SocialController {
     @PostMapping("/history/clear")
     @org.springframework.transaction.annotation.Transactional
     public String clearHistory(Authentication authentication) {
+        log.info("User {} is requesting to clear their listening history",
+                authentication != null ? authentication.getName() : "anonymous");
         if (authentication == null)
             return "redirect:/login";
         com.revature.revplay.entity.User user = userRepository.findByUsername(authentication.getName()).orElseThrow();

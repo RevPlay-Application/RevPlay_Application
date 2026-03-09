@@ -1,6 +1,7 @@
 package com.revature.revplay.controller;
 
 import com.revature.revplay.service.UserService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,6 +20,7 @@ import org.springframework.web.bind.annotation.RequestParam;
  * against existing database records to prevent unauthorized account takeovers.
  */
 @Controller
+@Log4j2
 public class ForgotPasswordController {
 
     private final UserService userService;
@@ -70,11 +72,15 @@ public class ForgotPasswordController {
     public String processForgotPassword(@RequestParam("username") String username,
             @RequestParam("email") String email,
             Model model) {
+        log.info("Processing forgot password request for user: {} with email: {}", username, email);
         boolean isValid = userService.verifyUser(username, email);
         if (isValid) {
+            log.info("Forgot password verification successful for user: {}", username);
             model.addAttribute("username", username);
             return "auth/reset-password";
         } else {
+            log.warn("Forgot password verification failed: Credentials match not found for user: {} and email: {}",
+                    username, email);
             model.addAttribute("error", "No account found with that username and email combination.");
             return "auth/forgot-password";
         }
@@ -98,13 +104,16 @@ public class ForgotPasswordController {
             @RequestParam("password") String password,
             @RequestParam("confirmPassword") String confirmPassword,
             Model model) {
+        log.info("Processing password reset for user: {}", username);
         if (!password.equals(confirmPassword)) {
+            log.warn("Password reset failed: Passwords do not match for user: {}", username);
             model.addAttribute("username", username);
             model.addAttribute("error", "Passwords do not match.");
             return "auth/reset-password";
         }
 
         userService.updatePassword(username, password);
+        log.info("Password successfully reset for user: {}", username);
         return "redirect:/login?resetSuccess";
     }
 }

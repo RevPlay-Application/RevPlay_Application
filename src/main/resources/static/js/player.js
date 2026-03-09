@@ -127,7 +127,12 @@ if (!window.Player) {
             if (!skipQueueAssignment) {
                 if (contextQueue && contextQueue.length > 0) {
                     this.originalQueue = [...contextQueue];
-                    this.queue = this.isShuffle ? this.shuffleArray([...this.originalQueue]) : [...this.originalQueue];
+                    if (this.isShuffle) {
+                        let others = this.originalQueue.filter(s => String(s.id) !== String(songId));
+                        this.queue = [this.originalQueue.find(s => String(s.id) === String(songId)), ...this.shuffleArray(others)];
+                    } else {
+                        this.queue = [...this.originalQueue];
+                    }
                     this.currentIndex = this.queue.findIndex(s => String(s.id) === String(songId));
                     if (this.currentIndex === -1) this.currentIndex = 0;
                 } else {
@@ -136,7 +141,12 @@ if (!window.Player) {
                         const pq = this.buildQueueFromPage();
                         if (pq.length > 0) {
                             this.originalQueue = pq;
-                            this.queue = this.isShuffle ? this.shuffleArray([...pq]) : [...pq];
+                            if (this.isShuffle) {
+                                let others = this.originalQueue.filter(s => String(s.id) !== String(songId));
+                                this.queue = [this.originalQueue.find(s => String(s.id) === String(songId)), ...this.shuffleArray(others)];
+                            } else {
+                                this.queue = [...this.originalQueue];
+                            }
                             idx = this.queue.findIndex(s => String(s.id) === String(songId));
                         }
                     }
@@ -193,7 +203,8 @@ if (!window.Player) {
             if (this.queue.length === 0) return;
             let idx = this.currentIndex + 1;
             if (idx >= this.queue.length) {
-                if (this.repeatMode === 1) idx = 0;
+                // If Shuffle is ON or Repeat All is ON, loop back to the first song
+                if (this.repeatMode === 1 || this.isShuffle) idx = 0;
                 else { this.isPlaying = false; this.updatePlayPauseIcon(); return; }
             }
             this.currentIndex = idx;
@@ -212,28 +223,49 @@ if (!window.Player) {
 
         toggleShuffle() {
             this.isShuffle = !this.isShuffle;
+            this.updateShuffleUI();
+
+            if (this.queue.length === 0) return;
+
+            const cur = this.currentSong || this.queue[this.currentIndex];
+            if (!cur) return;
+
+            if (this.isShuffle) {
+                // Shuffle ALL others and put current song at top so it doesn't interrupt the listen
+                let others = this.originalQueue.filter(s => String(s.id) !== String(cur.id));
+                this.queue = [cur, ...this.shuffleArray(others)];
+                this.currentIndex = 0;
+            } else {
+                this.queue = [...this.originalQueue];
+                this.currentIndex = this.queue.findIndex(s => String(s.id) === String(cur.id));
+            }
+            this.saveLastPlayed();
+            App.showToast(this.isShuffle ? 'Shuffle ON 🔀' : 'Shuffle OFF');
+        },
+
+        updateShuffleUI() {
             const btn = document.getElementById('player-shuffle');
             if (btn) {
                 btn.style.color = this.isShuffle ? '#FF6600' : '#888';
                 btn.title = this.isShuffle ? 'Shuffle ON' : 'Shuffle OFF';
             }
-            if (this.queue.length === 0) return;
-            const cur = this.queue[this.currentIndex];
-            this.queue = this.isShuffle ? this.shuffleArray([...this.originalQueue]) : [...this.originalQueue];
-            this.currentIndex = this.queue.findIndex(s => String(s.id) === String(cur.id));
-            App.showToast(this.isShuffle ? 'Shuffle ON 🔀' : 'Shuffle OFF');
         },
 
         toggleRepeat() {
             this.repeatMode = (this.repeatMode + 1) % 3;
+            this.updateRepeatUI();
+            const msgs = ['Repeat OFF', 'Repeat ALL', 'Repeat ONE'];
+            this.saveLastPlayed();
+            App.showToast(msgs[this.repeatMode]);
+        },
+
+        updateRepeatUI() {
             const btn = document.getElementById('player-repeat');
             if (!btn) return;
             const labels = ['🔁', '🔁', '🔂'];
             const colors = ['#888', '#FF6600', '#FF6600'];
             btn.innerHTML = labels[this.repeatMode];
             btn.style.color = colors[this.repeatMode];
-            const msgs = ['Repeat OFF', 'Repeat ALL', 'Repeat ONE'];
-            App.showToast(msgs[this.repeatMode]);
         },
 
         shuffleArray(arr) {
@@ -407,13 +439,16 @@ if (!window.Player) {
 
         // ---- State Persistence ----
         saveLastPlayed() {
-            const song = this.queue[this.currentIndex];
+            const song = this.currentSong || (this.queue.length > 0 ? this.queue[this.currentIndex] : null);
             if (!song) return;
             localStorage.setItem('revplay_last', JSON.stringify({
-                song: this.currentSong || this.queue[this.currentIndex],
+                song: song,
                 time: this.audio.currentTime,
                 paused: this.audio.paused,
-                volume: this.audio.volume
+                volume: this.audio.volume,
+                isShuffle: this.isShuffle,
+                repeatMode: this.repeatMode,
+                originalQueue: this.originalQueue
             }));
         },
 
@@ -425,9 +460,25 @@ if (!window.Player) {
                 if (!state || !state.song || !state.song.url) return;
 
                 const song = state.song;
-                this.queue = [song];
-                this.originalQueue = [song];
-                this.currentIndex = 0;
+
+                // Restore settings
+                if (state.isShuffle !== undefined) this.isShuffle = state.isShuffle;
+                if (state.repeatMode !== undefined) this.repeatMode = state.repeatMode;
+                if (state.originalQueue) this.originalQueue = state.originalQueue;
+
+                this.updateShuffleUI();
+                this.updateRepeatUI();
+
+                if (this.isShuffle && this.originalQueue.length > 0) {
+                    let others = this.originalQueue.filter(s => String(s.id) !== String(song.id));
+                    this.queue = [song, ...this.shuffleArray(others)];
+                    this.currentIndex = 0;
+                } else {
+                    this.queue = this.originalQueue.length > 0 ? [...this.originalQueue] : [song];
+                    this.currentIndex = this.originalQueue.length > 0 ? this.queue.findIndex(s => String(s.id) === String(song.id)) : 0;
+                    if (this.currentIndex === -1) this.currentIndex = 0;
+                }
+
                 this.updatePlayerUI(song);
                 this.checkFavoriteStatus(song.id);
 
@@ -441,7 +492,6 @@ if (!window.Player) {
 
                 this.audio.addEventListener('loadedmetadata', () => {
                     if (state.time > 0) this.audio.currentTime = state.time;
-                    // Don't auto-play on restore - let user decide
                     this.updatePlayPauseIcon();
                 }, { once: true });
 
@@ -455,6 +505,14 @@ if (!window.Player) {
         scheduleStateSave() {
             clearTimeout(this._saveTimer);
             this._saveTimer = setTimeout(() => this.saveLastPlayed(), 2000);
+        },
+
+        close() {
+            this.audio.pause();
+            this.isPlaying = false;
+            this.updatePlayPauseIcon();
+            const container = document.getElementById('global-music-player');
+            if (container) container.style.display = 'none';
         }
     };
 } // end Player check

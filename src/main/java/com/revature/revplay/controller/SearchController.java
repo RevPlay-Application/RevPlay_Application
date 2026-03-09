@@ -6,6 +6,7 @@ import com.revature.revplay.entity.Song;
 import com.revature.revplay.repository.AlbumRepository;
 import com.revature.revplay.repository.UserRepository;
 import com.revature.revplay.service.SearchService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,6 +31,7 @@ import java.util.stream.Collectors;
  */
 @Controller
 @RequestMapping("/search")
+@Log4j2
 public class SearchController {
 
     private final SearchService searchService;
@@ -73,6 +75,7 @@ public class SearchController {
      */
     @GetMapping
     public String search(@RequestParam(name = "q", required = false) String keyword, Model model) {
+        log.info("Global search initiated with keyword: {}", keyword);
         if (keyword == null || keyword.trim().isEmpty()) {
             return "search/categories";
         }
@@ -81,6 +84,7 @@ public class SearchController {
         model.addAttribute("keyword", keyword);
         model.addAttribute("results", results);
 
+        log.debug("Found matches in global search for keyword: {}", keyword);
         return "search/results";
     }
 
@@ -101,6 +105,7 @@ public class SearchController {
      */
     @GetMapping("/categories")
     public String browseCategories(Model model) {
+        log.info("Request to browse categories");
         model.addAttribute("genres", searchService.getAllGenres());
         // For Person 2 Categories: Browse by artist, album
         model.addAttribute("artists",
@@ -133,6 +138,8 @@ public class SearchController {
             @RequestParam(name = "releaseYear", required = false) Integer releaseYear,
             Model model) {
 
+        log.info("Filtering songs with criteria - Title: {}, Genre: {}, Artist ID: {}, Album ID: {}, Year: {}",
+                title, genre, artistId, albumId, releaseYear);
         List<Song> songs = searchService.filterSongs(title, genre, artistId, albumId, releaseYear);
 
         model.addAttribute("songs", songs);
