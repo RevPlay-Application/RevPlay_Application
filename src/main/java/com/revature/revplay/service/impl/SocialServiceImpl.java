@@ -6,6 +6,7 @@ import com.revature.revplay.exception.ResourceNotFoundException;
 import com.revature.revplay.repository.SongRepository;
 import com.revature.revplay.repository.UserRepository;
 import com.revature.revplay.service.SocialService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,6 +27,7 @@ import java.util.stream.Collectors;
  * and reliable.
  */
 @Service
+@Log4j2
 public class SocialServiceImpl implements SocialService {
 
     private final UserRepository userRepository;
@@ -64,12 +66,14 @@ public class SocialServiceImpl implements SocialService {
     @Override
     @Transactional
     public boolean toggleFollowArtist(Long artistId, String username) {
+        log.info("User {} is attempting to toggle follow for artist ID: {}", username, artistId);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
         User artist = userRepository.findById(artistId)
                 .orElseThrow(() -> new ResourceNotFoundException("Artist not found"));
 
         if (user.getId().equals(artist.getId())) {
+            log.warn("User {} attempted to follow themselves (ID: {})", username, artistId);
             throw new RuntimeException("You cannot follow yourself");
         }
 
@@ -79,10 +83,12 @@ public class SocialServiceImpl implements SocialService {
         if (isFollowing) {
             user.getFollowing().remove(artist);
             userRepository.save(user);
+            log.info("User {} unfollowed artist ID: {}", username, artistId);
             return false;
         } else {
             user.getFollowing().add(artist);
             userRepository.save(user);
+            log.info("User {} is now following artist ID: {}", username, artistId);
             return true;
         }
     }
@@ -155,6 +161,7 @@ public class SocialServiceImpl implements SocialService {
     @Override
     @Transactional(readOnly = true)
     public List<Song> getTopTrendingSongs(int limit) {
+        log.debug("Fetching top {} trending songs", limit);
         return songRepository.findTopTrendingSongs(PageRequest.of(0, limit));
     }
 

@@ -9,6 +9,7 @@ import com.revature.revplay.repository.AlbumRepository;
 import com.revature.revplay.repository.ArtistProfileRepository;
 import com.revature.revplay.repository.SongRepository;
 import com.revature.revplay.repository.UserRepository;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,6 +32,7 @@ import java.util.List;
  */
 @Controller
 @RequestMapping("/artists")
+@Log4j2
 public class ArtistViewController {
 
     private final UserRepository userRepository;
@@ -80,6 +82,7 @@ public class ArtistViewController {
     @GetMapping("/{username}")
     public String viewArtistPublicProfile(@PathVariable("username") String username,
             org.springframework.security.core.Authentication authentication, Model model) {
+        log.info("Requesting public profile for artist: {}", username);
         User artist = userRepository.findByUsername(username)
                 .filter(u -> u.getRole().name().equals("ARTIST"))
                 .orElseThrow(() -> new ResourceNotFoundException("Artist not found: " + username));
@@ -89,6 +92,7 @@ public class ArtistViewController {
 
         List<Song> songs = songRepository.findByArtist(artist);
         List<Album> albums = albumRepository.findByArtist(artist);
+        log.debug("Fetched {} songs and {} albums for artist: {}", songs.size(), albums.size(), username);
 
         model.addAttribute("artist", artist);
         model.addAttribute("profile", profile);
@@ -97,6 +101,8 @@ public class ArtistViewController {
 
         model.addAttribute("followerCount", socialService.getFollowerCount(artist.getId()));
         if (authentication != null && authentication.isAuthenticated()) {
+            log.debug("Authenticated viewer {} checking follow status for artist: {}", authentication.getName(),
+                    username);
             model.addAttribute("isFollowing", socialService.isFollowing(artist.getId(), authentication.getName()));
         }
 

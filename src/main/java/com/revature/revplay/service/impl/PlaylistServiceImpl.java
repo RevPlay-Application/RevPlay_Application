@@ -9,6 +9,7 @@ import com.revature.revplay.repository.PlaylistRepository;
 import com.revature.revplay.repository.SongRepository;
 import com.revature.revplay.repository.UserRepository;
 import com.revature.revplay.service.PlaylistService;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -27,6 +28,7 @@ import java.util.Set;
  * efficient dependency management and database transaction control.
  */
 @Service
+@Log4j2
 public class PlaylistServiceImpl implements PlaylistService {
 
     private final PlaylistRepository playlistRepository;
@@ -65,6 +67,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     @Transactional
     public Playlist createPlaylist(PlaylistDto playlistDto, String username) {
+        log.info("Creating new playlist '{}' for user: {}", playlistDto.getName(), username);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -75,7 +78,9 @@ public class PlaylistServiceImpl implements PlaylistService {
                 .user(user)
                 .build();
 
-        return playlistRepository.save(playlist);
+        Playlist saved = playlistRepository.save(playlist);
+        log.info("Playlist '{}' created with ID: {}", saved.getName(), saved.getId());
+        return saved;
     }
 
     /**
@@ -163,8 +168,10 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     @Transactional
     public Playlist updatePlaylist(Long id, PlaylistDto playlistDto, String username) {
+        log.info("Updating playlist ID: {} by user: {}", id, username);
         Playlist playlist = findPlaylistOrThrow(id);
         if (!playlist.getUser().getUsername().equals(username)) {
+            log.warn("Unauthorized attempt to update playlist ID: {} by user: {}", id, username);
             throw new RuntimeException("Unauthorized");
         }
 
@@ -172,7 +179,9 @@ public class PlaylistServiceImpl implements PlaylistService {
         playlist.setDescription(playlistDto.getDescription());
         playlist.setPublic(playlistDto.isPublic());
 
-        return playlistRepository.save(playlist);
+        Playlist updated = playlistRepository.save(playlist);
+        log.info("Playlist ID: {} successfully updated.", id);
+        return updated;
     }
 
     /**
@@ -187,11 +196,14 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     @Transactional
     public void deletePlaylist(Long id, String username) {
+        log.info("Attempting to delete playlist ID: {} by user: {}", id, username);
         Playlist playlist = findPlaylistOrThrow(id);
         if (!playlist.getUser().getUsername().equals(username)) {
+            log.warn("Unauthorized attempt to delete playlist ID: {} by user: {}", id, username);
             throw new RuntimeException("Unauthorized");
         }
         playlistRepository.delete(playlist);
+        log.info("Playlist ID: {} deleted.", id);
     }
 
     /**
@@ -264,6 +276,7 @@ public class PlaylistServiceImpl implements PlaylistService {
     @Override
     @Transactional
     public boolean toggleLikeSong(Long songId, String username) {
+        log.info("Toggling like for song ID: {} by user: {}", songId, username);
         User user = userRepository.findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException("User not found"));
 
@@ -274,8 +287,10 @@ public class PlaylistServiceImpl implements PlaylistService {
         boolean isLiked = user.getLikedSongs().contains(song);
         if (isLiked) {
             user.getLikedSongs().remove(song);
+            log.debug("User {} unliked song ID: {}", username, songId);
         } else {
             user.getLikedSongs().add(song);
+            log.debug("User {} liked song ID: {}", username, songId);
         }
         userRepository.save(user);
         return !isLiked;

@@ -57,7 +57,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
          * Filters the entire user table for accounts holding a specific authorization
          * Role.
          */
-        @org.springframework.data.jpa.repository.Query("SELECT u FROM User u WHERE u.role = :role")
+        @org.springframework.data.jpa.repository.Query("SELECT u FROM User u LEFT JOIN FETCH u.artistProfile WHERE u.role = :role")
         List<User> findByRole(
                         @org.springframework.data.repository.query.Param("role") com.revature.revplay.entity.Role role);
 

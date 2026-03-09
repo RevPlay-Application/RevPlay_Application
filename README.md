@@ -162,7 +162,7 @@ All core features and user stories have been fully implemented, tested, and inte
 
 ## �👥 Team & User Stories
 
-### 👨‍💻 Person 1 — Authentication & Basic Profile + Basic Discovery ✅
+### 👨‍💻 Manjunath (Person 1) — Authentication & Basic Profile ✅
 
 **As a User (Listener), I should be able to:**
 - ✅ Register and create an account with email, username, and password
@@ -180,7 +180,7 @@ All core features and user stories have been fully implemented, tested, and inte
 
 ---
 
-### 👨‍💻 Person 2 — Search, Categories & Artist/Album Views ✅
+### 👩‍💻 Neha (Person 2) — Search, Categories & Artist/Album Views ✅
 
 **As a User (Listener), I should be able to:**
 - ✅ Search for songs, artists, albums, and playlists by keywords
@@ -197,7 +197,7 @@ All core features and user stories have been fully implemented, tested, and inte
 
 ---
 
-### 👨‍💻 Person 3 — Music Player & Playback Queue ✅
+### 👩‍💻 Ramya (Person 3) — Music Player & Playback Queue ✅
 
 **As a User (Listener), I should be able to:**
 - ✅ Play songs using integrated web music player
@@ -215,7 +215,7 @@ All core features and user stories have been fully implemented, tested, and inte
 
 ---
 
-### 👨‍💻 Person 4 — Favorites & Playlist Management ✅
+### 👩‍💻 Indraja (Person 4) — Favorites & Playlist Management ✅
 
 **As a User (Listener), I should be able to:**
 - ✅ Mark songs as favorites
@@ -237,7 +237,7 @@ All core features and user stories have been fully implemented, tested, and inte
 
 ---
 
-### 👨‍💻 Person 5 — Artist Upload & Analytics + Account Stats ✅
+### 👩‍💻 Pooja (Person 5) — Artist Upload & Analytics + Account Stats ✅
 
 **As a Musician/Artist, I should be able to:**
 - ✅ Upload songs with details (title, genre, duration, audio file)
@@ -283,6 +283,8 @@ All core features and user stories have been fully implemented, tested, and inte
 - **UI Consistency:** Custom-styled all form elements (dropdowns, inputs) with an orange/snow design system, ensuring a premium "wow" factor across all pages.
 - **Data URIs:** Profile and banner images are served as Base64 Data URIs directly from the Oracle BLOB store to minimize complex file system management.
 - **Security:** Spring Security 6 integration using modern lambda-based DSL and role-based access control.
+- **Logging:** Integrated **Log4j2** with a **RollingFileAppender** to capture application events, user actions, and errors in both console and persistent log files (`/logs` directory).
+- **Testing:** Implemented automated unit testing with **JaCoCo** code coverage reporting to ensure high quality and maintainability of core logic.
 
 ```sql
 -- --- RevPlay Database Cleanup (Oracle) ---
