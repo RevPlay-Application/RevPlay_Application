@@ -29,8 +29,13 @@
                     <h2 class="text-primary fw-bold mb-1" th:text="${playlist.name}">Playlist Title</h2>
                     <p class="text-muted mb-0" th:text="${playlist.description}">Playlist Description</p>
                 </div>
-                <div>
-                    <a th:href="@{/library/playlists}" class="btn btn-outline-secondary">Back to Library</a>
+                <div class="d-flex align-items-center">
+                    <button th:if="${#authentication != null and #authentication.name == playlist.user.username}"
+                            class="btn btn-primary fw-bold px-4 shadow-sm rounded-pill me-2" data-bs-toggle="modal"
+                            data-bs-target="#editPlaylistModal">
+                        Edit Playlist
+                    </button>
+                    <a th:href="@{/library/playlists}" class="btn btn-outline-secondary px-4 rounded-pill shadow-sm">Back to Library</a>
                 </div>
             </div>
 
@@ -123,6 +128,52 @@
                 </div>
             </div>
         </div>
+
+        <!-- Edit Playlist Modal -->
+        <div class="modal fade" id="editPlaylistModal" tabindex="-1" aria-hidden="true" th:if="${#authentication != null and #authentication.name == playlist.user.username}">
+            <div class="modal-dialog modal-dialog-centered">
+                <div class="modal-content border-0 shadow-lg rounded-4 overflow-hidden">
+                    <div class="modal-header bg-primary text-white border-0 py-3">
+                        <h5 class="modal-title fw-bold">Edit Playlist</h5>
+                        <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal"
+                            aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-4 pb-2">
+                        <form method="post" th:action="@{/library/playlists/{id}/update(id=${playlist.id})}" th:object="${playlistDto}">
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Playlist Name</label>
+                                <!-- th:field handles form binding to the DTO -->
+                                <input type="text" th:field="*{name}"
+                                    class="form-control border-primary shadow-sm"
+                                    placeholder="E.g. Daily Drive, Gym Focus" required>
+                            </div>
+                            <div class="mb-4">
+                                <label class="form-label fw-bold">Description (Optional)</label>
+                                <textarea th:field="*{description}" class="form-control shadow-sm" rows="2"
+                                    placeholder="Describe the vibe..."></textarea>
+                            </div>
+                            <div class="mb-4">
+                                <div class="form-check form-switch card p-3 bg-light border-0">
+                                    <input class="form-check-input" type="checkbox" th:field="*{public}"
+                                        id="isPublicEdit">
+                                    <label class="form-check-label fw-bold text-dark" for="isPublicEdit">
+                                        Make this playlist Public
+                                    </label>
+                                    <small class="text-muted">Public playlists are visible on your
+                                        profile.</small>
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 mb-2">
+                                <button type="submit" class="btn btn-primary btn-lg fw-bold shadow">Save Changes</button>
+                                <button type="button" class="btn btn-link text-muted text-decoration-none"
+                                    data-bs-dismiss="modal">Cancel</button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+
     </div><!-- /#main-content -->
 
     <!-- Injects the layout's global footer. -->
