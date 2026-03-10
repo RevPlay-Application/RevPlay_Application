@@ -428,7 +428,7 @@ if (!window.Player) {
                     }
                 });
                 if (res.ok) {
-                    App.showToast('✅ Added to playlist!');
+                    App.showToast('Added to playlist!');
                     document.getElementById('player-playlist-menu').style.display = 'none';
                 } else {
                     App.showToast('Failed to add to playlist.', 'danger');
