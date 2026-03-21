@@ -9,6 +9,7 @@ import com.revature.revplay.repository.ArtistProfileRepository;
 import com.revature.revplay.repository.UserRepository;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
@@ -40,6 +41,10 @@ class AuthServiceImplTest {
         dto.setEmail("pooja@test.com");
         dto.setPassword("123456");
         dto.setArtist(artist);
+        dto.setSecurityQuestion("Your pet name?");
+        dto.setSecurityAnswer("myPet");
+        dto.setSecurityHint("pet");
+
         return dto;
     }
 
@@ -85,7 +90,16 @@ class AuthServiceImplTest {
         assertNotNull(result);
         assertEquals("pooja", result.getUsername());
 
-        verify(userRepository).save(any(User.class));
+
+        ArgumentCaptor<User> userCaptor = ArgumentCaptor.forClass(User.class);
+        verify(userRepository).save(userCaptor.capture());
+
+        User capturedUser = userCaptor.getValue();
+
+        assertEquals("pooja", capturedUser.getUsername());
+        assertEquals("encoded123", capturedUser.getPassword());
+        assertEquals("mypet", capturedUser.getSecurityAnswer()); // lowercase check
+
         verify(artistProfileRepository, never()).save(any());
     }
 
@@ -106,11 +120,11 @@ class AuthServiceImplTest {
 
         User result = authService.registerUser(dto);
 
-        assertEquals(Role.ARTIST, savedUser.getRole());
+        assertNotNull(result);
+        assertEquals(Role.ARTIST, result.getRole());
 
         verify(artistProfileRepository).save(any(ArtistProfile.class));
     }
-
     @Test
     void shouldFindUserByUsername() {
 

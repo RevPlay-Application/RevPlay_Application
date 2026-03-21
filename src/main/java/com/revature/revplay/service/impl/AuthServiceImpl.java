@@ -20,6 +20,7 @@ public class AuthServiceImpl implements AuthService {
     private final ArtistProfileRepository artistProfileRepository;
     private final PasswordEncoder passwordEncoder;
 
+
     public AuthServiceImpl(UserRepository userRepository, ArtistProfileRepository artistProfileRepository,
             PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
@@ -45,7 +46,14 @@ public class AuthServiceImpl implements AuthService {
         user.setEmail(registrationDto.getEmail());
         user.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         user.setSecurityQuestion(registrationDto.getSecurityQuestion());
-        user.setSecurityAnswer(registrationDto.getSecurityAnswer().toLowerCase()); // lower case for easier compare
+        String securityAnswer = registrationDto.getSecurityAnswer();
+
+        if (securityAnswer == null || securityAnswer.isBlank()) {
+            log.warn("Registration failed: Security answer is missing");
+            throw new RuntimeException("Security answer is required");
+        }
+
+        user.setSecurityAnswer(securityAnswer.toLowerCase()); // lower case for easier compare
         user.setSecurityHint(registrationDto.getSecurityHint());
         user.setRole(registrationDto.isArtist() ? Role.ARTIST : Role.USER);
         user.setDisplayName(registrationDto.getUsername());
