@@ -28,6 +28,7 @@ class SearchControllerTest {
     @Mock
     private SearchService searchService;
 
+    // ✅ REQUIRED because controller directly uses them
     @Mock
     private UserRepository userRepository;
 
@@ -40,6 +41,7 @@ class SearchControllerTest {
     @InjectMocks
     private SearchController controller;
 
+    // ✅ Test 1
     @Test
     void shouldReturnCategoriesWhenKeywordEmpty() {
 
@@ -48,6 +50,7 @@ class SearchControllerTest {
         assertEquals("search/categories", view);
     }
 
+    // ✅ Test 2
     @Test
     void shouldReturnSearchResultsWhenKeywordProvided() {
 
@@ -63,21 +66,17 @@ class SearchControllerTest {
         verify(model).addAttribute("results", results);
     }
 
+
     @Test
     void shouldLoadBrowseCategoriesPage() {
 
-        User artist = new User();
-        artist.setRole(Role.ARTIST);
-
         when(searchService.getAllGenres()).thenReturn(List.of("Rock", "Pop"));
-        when(userRepository.findAll()).thenReturn(List.of(artist));
-        when(albumRepository.findAll()).thenReturn(List.of());
 
         String view = controller.browseCategories(model);
 
         assertEquals("search/categories", view);
 
-        verify(model).addAttribute(eq("genres"), any());
+        verify(model).addAttribute(eq("genres"), anyList());
         verify(model).addAttribute(eq("artists"), any());
         verify(model).addAttribute(eq("albums"), any());
     }
@@ -89,12 +88,6 @@ class SearchControllerTest {
 
         when(searchService.filterSongs("song", "rock", 1L, 2L, 2024))
                 .thenReturn(songs);
-
-        when(searchService.getAllGenres()).thenReturn(List.of("Rock"));
-
-        when(userRepository.findAll()).thenReturn(List.of());
-
-        when(albumRepository.findAll()).thenReturn(List.of());
 
         String view = controller.filterSongs(
                 "song",
